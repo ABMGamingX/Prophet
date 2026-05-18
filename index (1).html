@@ -1,0 +1,1287 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Arc Prophet — Prediction Arena on Arc Testnet</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/ethers@6.9.0/dist/ethers.umd.min.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore-compat.js"></script>
+
+<style>
+/* ═══════════════════════════════════════
+   VARIABLES & RESET
+═══════════════════════════════════════ */
+:root {
+  --bg:          #070715;
+  --card:        #0e0c26;
+  --border:      rgba(139,92,246,0.18);
+  --border-hi:   rgba(139,92,246,0.45);
+  --purple:      #8b5cf6;
+  --purple-l:    #a78bfa;
+  --cyan:        #22d3ee;
+  --green:       #34d399;
+  --red:         #f87171;
+  --amber:       #fbbf24;
+  --text:        #e2e8f0;
+  --muted:       #64748b;
+  --dim:         #94a3b8;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:'Inter',system-ui,sans-serif;min-height:100vh;overflow-x:hidden}
+
+/* Subtle grid bg */
+body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(rgba(139,92,246,.04) 1px,transparent 1px),linear-gradient(90deg,rgba(139,92,246,.04) 1px,transparent 1px);background-size:48px 48px;pointer-events:none;z-index:0}
+
+.wrap{max-width:1100px;margin:0 auto;padding:0 20px;position:relative;z-index:1}
+
+/* ═══════════════════════════════════════
+   HEADER
+═══════════════════════════════════════ */
+header{padding:18px 0;border-bottom:1px solid var(--border);margin-bottom:24px}
+.hdr{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px}
+.logo{display:flex;align-items:center;gap:12px}
+.logo-icon{width:42px;height:42px;background:linear-gradient(135deg,#8b5cf6,#22d3ee);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0}
+.logo h1{font-size:20px;font-weight:800;background:linear-gradient(90deg,#a78bfa,#22d3ee);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.logo p{font-size:11px;color:var(--muted);font-weight:500;text-transform:uppercase;letter-spacing:.08em}
+.hdr-right{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+
+#wallet-addr{font-size:12px;color:var(--dim);font-family:monospace;background:rgba(139,92,246,.1);padding:6px 12px;border-radius:8px;display:none}
+
+#btn-connect{background:linear-gradient(135deg,rgba(139,92,246,.2),rgba(34,211,238,.1));border:1px solid var(--border-hi);color:var(--purple-l);padding:10px 20px;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer;transition:all .2s;white-space:nowrap}
+#btn-connect:hover{background:linear-gradient(135deg,rgba(139,92,246,.35),rgba(34,211,238,.2));box-shadow:0 0 24px rgba(139,92,246,.25)}
+
+/* ═══════════════════════════════════════
+   ARC ADVANTAGE BAR
+═══════════════════════════════════════ */
+.arc-bar{background:rgba(139,92,246,.07);border:1px solid var(--border);border-radius:14px;padding:14px 20px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:24px}
+.arc-pill{display:flex;align-items:center;gap:7px;font-size:12px;color:var(--dim);font-weight:500}
+.arc-pill .dot{width:7px;height:7px;border-radius:50%;background:var(--cyan);animation:pulse 2s ease-in-out infinite}
+.arc-pill .val{color:var(--cyan);font-weight:700}
+.gas-live{color:var(--amber);font-weight:700;font-family:monospace}
+
+/* ═══════════════════════════════════════
+   CARDS
+═══════════════════════════════════════ */
+.card{background:var(--card);border:1px solid var(--border);border-radius:18px;padding:24px;transition:border-color .2s}
+.card:hover{border-color:rgba(139,92,246,.35)}
+.card-label{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.12em;color:var(--muted);margin-bottom:18px}
+
+/* ═══════════════════════════════════════
+   STATS BAR
+═══════════════════════════════════════ */
+.stats-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-bottom:24px}
+.stat-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:16px;display:flex;align-items:center;gap:12px}
+.stat-ico{width:38px;height:38px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
+.ico-p{background:rgba(139,92,246,.15)} .ico-a{background:rgba(251,191,36,.15)} .ico-g{background:rgba(52,211,153,.15)} .ico-c{background:rgba(34,211,238,.15)}
+.stat-lbl{font-size:11px;color:var(--muted);font-weight:500;text-transform:uppercase;letter-spacing:.07em}
+.stat-val{font-size:22px;font-weight:800;line-height:1.1;color:var(--text)}
+.v-c{color:var(--cyan)} .v-a{color:var(--amber)} .v-p{color:var(--purple-l)} .v-g{color:var(--green)}
+
+/* ═══════════════════════════════════════
+   QUESTION CARD
+═══════════════════════════════════════ */
+#q-card{margin-bottom:22px}
+.q-top{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:20px}
+.cat-badge{padding:4px 12px;border-radius:20px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.1em}
+.cat-0{background:rgba(139,92,246,.2);color:var(--purple-l);border:1px solid rgba(139,92,246,.4)}
+.cat-1{background:rgba(34,211,238,.15);color:var(--cyan);border:1px solid rgba(34,211,238,.3)}
+.cat-2{background:rgba(52,211,153,.15);color:var(--green);border:1px solid rgba(52,211,153,.3)}
+.cat-3{background:rgba(251,191,36,.15);color:var(--amber);border:1px solid rgba(251,191,36,.3)}
+.live-badge{display:flex;align-items:center;gap:6px;font-size:11px;font-weight:700;color:var(--green);text-transform:uppercase;letter-spacing:.1em}
+.live-dot{width:8px;height:8px;border-radius:50%;background:var(--green);animation:pulse 1.4s ease-in-out infinite}
+.cdwn{font-size:12px;color:var(--muted);display:flex;align-items:center;gap:5px}
+.cdwn-t{color:var(--amber);font-weight:700;font-family:monospace}
+.q-text{font-size:22px;font-weight:700;line-height:1.45;margin-bottom:24px;color:var(--text)}
+
+/* confidence bar */
+.conf-hdr{display:flex;justify-content:space-between;font-size:12px;color:var(--muted);margin-bottom:8px}
+.conf-bar{height:9px;background:rgba(248,113,113,.25);border-radius:5px;overflow:hidden;position:relative}
+.conf-fill{height:100%;background:var(--green);border-radius:5px;transition:width .6s ease}
+.conf-counts{display:flex;justify-content:space-between;font-size:13px;margin-top:8px}
+.cnt-y{color:var(--green);font-weight:700} .cnt-n{color:var(--red);font-weight:700} .cnt-t{color:var(--muted);font-size:12px}
+
+/* vote buttons */
+.vote-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:20px 0 14px}
+.btn-v{padding:18px 12px;border-radius:14px;border:1.5px solid;font-size:17px;font-weight:800;cursor:pointer;transition:all .15s;display:flex;align-items:center;justify-content:center;gap:8px;letter-spacing:.01em}
+.btn-yes{background:rgba(52,211,153,.12);border-color:var(--green);color:var(--green)}
+.btn-yes:hover:not(:disabled){background:rgba(52,211,153,.28);box-shadow:0 0 24px rgba(52,211,153,.2);transform:translateY(-2px)}
+.btn-no{background:rgba(248,113,113,.12);border-color:var(--red);color:var(--red)}
+.btn-no:hover:not(:disabled){background:rgba(248,113,113,.28);box-shadow:0 0 24px rgba(248,113,113,.2);transform:translateY(-2px)}
+.btn-v:disabled{opacity:.35;cursor:not-allowed;transform:none!important}
+.btn-v:active:not(:disabled){transform:scale(.97)}
+
+/* gas row */
+.gas-row{background:rgba(34,211,238,.05);border:1px solid rgba(34,211,238,.18);border-radius:10px;padding:11px 16px;display:flex;align-items:center;justify-content:space-between;font-size:12px;color:var(--muted)}
+.gas-row .val{color:var(--cyan);font-weight:700;font-family:monospace}
+
+/* TX status */
+#tx-box{display:none;border-radius:12px;padding:15px 18px;margin-top:14px}
+#tx-box.success{background:rgba(52,211,153,.07);border:1px solid rgba(52,211,153,.3)}
+#tx-box.error{background:rgba(248,113,113,.07);border:1px solid rgba(248,113,113,.3)}
+#tx-box.pending{background:rgba(251,191,36,.07);border:1px solid rgba(251,191,36,.3)}
+.tx-lbl{font-size:12px;color:var(--muted);margin-bottom:6px}
+.tx-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.tx-hash{font-size:12px;font-family:monospace;color:var(--cyan);word-break:break-all}
+.tx-link{font-size:11px;color:var(--purple-l);text-decoration:none;border:1px solid var(--border);padding:3px 9px;border-radius:5px;white-space:nowrap;transition:border-color .2s}
+.tx-link:hover{border-color:var(--purple)}
+
+/* voted state */
+.voted-box{text-align:center;padding:18px;background:rgba(139,92,246,.08);border-radius:12px;border:1px solid var(--border)}
+.voted-label{font-size:12px;color:var(--muted);margin-bottom:6px}
+.voted-answer{font-size:22px;font-weight:800}
+
+/* claim button */
+#btn-claim{display:none;width:100%;margin-top:14px;padding:15px;background:rgba(251,191,36,.14);border:1.5px solid rgba(251,191,36,.45);border-radius:12px;color:var(--amber);font-size:16px;font-weight:800;cursor:pointer;transition:all .2s}
+#btn-claim:hover{background:rgba(251,191,36,.28);box-shadow:0 0 24px rgba(251,191,36,.18)}
+
+/* result banner */
+.result-baner{padding:18px;border-radius:12px;text-align:center;margin-top:14px}
+.res-correct{background:rgba(52,211,153,.1);border:1px solid rgba(52,211,153,.4)}
+.res-wrong{background:rgba(248,113,113,.1);border:1px solid rgba(248,113,113,.4)}
+.res-h{font-size:18px;font-weight:800;margin-bottom:4px}
+
+/* connect required */
+.conn-req{display:flex;flex-direction:column;align-items:center;gap:16px;padding:44px 20px;text-align:center}
+.conn-req .big-icon{font-size:52px}
+.conn-req h2{font-size:20px;font-weight:700}
+.conn-req p{font-size:14px;color:var(--muted)}
+.btn-big-connect{background:linear-gradient(135deg,rgba(139,92,246,.3),rgba(34,211,238,.2));border:1px solid var(--border-hi);color:var(--purple-l);padding:14px 36px;border-radius:12px;font-size:16px;font-weight:700;cursor:pointer;transition:all .2s}
+.btn-big-connect:hover{box-shadow:0 0 30px rgba(139,92,246,.25);transform:translateY(-1px)}
+
+/* empty / loading */
+.spinner{display:inline-block;width:16px;height:16px;border:2px solid rgba(139,92,246,.3);border-top-color:var(--purple);border-radius:50%;animation:spin .8s linear infinite}
+.empty{text-align:center;padding:32px 16px;color:var(--muted);font-size:14px}
+
+/* ═══════════════════════════════════════
+   2-COLUMN LAYOUT
+═══════════════════════════════════════ */
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:22px}
+
+/* ═══════════════════════════════════════
+   MY STATS CARD (inside two-col)
+═══════════════════════════════════════ */
+.xp-bar-bg{height:7px;background:rgba(139,92,246,.15);border-radius:4px;overflow:hidden;margin:8px 0 4px}
+.xp-bar-fill{height:100%;background:linear-gradient(90deg,#8b5cf6,#22d3ee);border-radius:4px;transition:width .5s ease}
+.xp-lbls{display:flex;justify-content:space-between;font-size:11px;color:var(--muted)}
+.mini-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:16px}
+.mini-cell{border-radius:10px;padding:12px;text-align:center;border:1px solid}
+.mc-p{background:rgba(139,92,246,.08);border-color:rgba(139,92,246,.2)} .mc-g{background:rgba(52,211,153,.08);border-color:rgba(52,211,153,.2)} .mc-a{background:rgba(251,191,36,.08);border-color:rgba(251,191,36,.2)} .mc-c{background:rgba(34,211,238,.08);border-color:rgba(34,211,238,.2)}
+.mc-val{font-size:21px;font-weight:800} .mc-lbl{font-size:11px;color:var(--muted);margin-top:2px}
+.fp-row{margin-top:10px;padding:10px 12px;background:rgba(139,92,246,.05);border-radius:8px;font-size:12px;color:var(--muted)}
+
+/* ═══════════════════════════════════════
+   LEADERBOARD
+═══════════════════════════════════════ */
+.lb-row{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid rgba(139,92,246,.09)}
+.lb-row:last-child{border-bottom:none}
+.lb-num{width:28px;height:28px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;flex-shrink:0}
+.lb-1{background:rgba(251,191,36,.2);color:var(--amber)} .lb-2{background:rgba(148,163,184,.2);color:#94a3b8} .lb-3{background:rgba(205,124,58,.2);color:#cd7c3a} .lb-def{background:rgba(139,92,246,.1);color:var(--muted)}
+.lb-addr{font-size:13px;font-family:monospace;color:var(--dim);flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.lb-me .lb-addr{color:var(--purple-l)}
+.lb-xp{font-size:13px;font-weight:800;color:var(--purple-l);white-space:nowrap}
+.lb-acc{font-size:11px;color:var(--green);white-space:nowrap;text-align:right}
+
+/* ═══════════════════════════════════════
+   HISTORY
+═══════════════════════════════════════ */
+.hist-row{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid rgba(139,92,246,.09);font-size:13px}
+.hist-row:last-child{border-bottom:none}
+.hist-day{font-size:12px;color:var(--muted);font-family:monospace;min-width:50px}
+.hist-ans{padding:3px 10px;border-radius:20px;font-size:11px;font-weight:700}
+.h-yes{background:rgba(52,211,153,.15);color:var(--green)} .h-no{background:rgba(248,113,113,.15);color:var(--red)}
+.hist-res{font-size:12px;font-weight:700} .hr-ok{color:var(--green)} .hr-ng{color:var(--red)} .hr-p{color:var(--muted)}
+.hist-link{margin-left:auto;font-size:11px;color:var(--purple-l);text-decoration:none;white-space:nowrap}
+.hist-link:hover{color:var(--cyan)}
+
+/* ═══════════════════════════════════════
+   ADMIN PANEL
+═══════════════════════════════════════ */
+#admin-panel{display:none;background:rgba(251,191,36,.05);border:1px solid rgba(251,191,36,.3);border-radius:18px;padding:22px;margin-bottom:22px}
+.admin-title{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--amber);margin-bottom:16px}
+.admin-row{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:10px;align-items:center}
+.a-inp{background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:8px;padding:10px 14px;color:var(--text);font-size:13px;font-family:inherit;outline:none}
+.a-inp:focus{border-color:var(--purple)}
+.a-inp.flex1{flex:1;min-width:180px}
+.a-sel{background:rgba(15,12,38,.9);border:1px solid var(--border);border-radius:8px;padding:10px 14px;color:var(--text);font-size:13px;font-family:inherit;cursor:pointer;outline:none}
+.btn-admin{background:rgba(251,191,36,.15);border:1px solid rgba(251,191,36,.4);color:var(--amber);padding:10px 18px;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;transition:all .2s;white-space:nowrap}
+.btn-admin:hover{background:rgba(251,191,36,.28)}
+.admin-hint{font-size:11px;color:var(--muted);margin-top:4px}
+.admin-questions{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}
+.q-preset{background:rgba(139,92,246,.08);border:1px solid var(--border);border-radius:8px;padding:8px 12px;font-size:12px;color:var(--dim);cursor:pointer;transition:all .2s;text-align:left}
+.q-preset:hover{border-color:var(--purple);color:var(--purple-l)}
+
+/* ═══════════════════════════════════════
+   ARC ADVANTAGES SHOWCASE
+═══════════════════════════════════════ */
+.adv-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin-bottom:22px}
+.adv-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:16px}
+.adv-icon{font-size:24px;margin-bottom:10px}
+.adv-title{font-size:13px;font-weight:700;color:var(--text);margin-bottom:4px}
+.adv-desc{font-size:12px;color:var(--muted);line-height:1.6}
+.adv-val{font-size:16px;font-weight:800;color:var(--cyan);margin-top:6px}
+
+/* ═══════════════════════════════════════
+   TOAST
+═══════════════════════════════════════ */
+#toast-ct{position:fixed;bottom:24px;right:24px;z-index:9999;display:flex;flex-direction:column;gap:8px;max-width:360px}
+.toast{background:var(--card);border:1px solid var(--border-hi);border-radius:12px;padding:13px 18px;font-size:13px;font-weight:500;animation:slideIn .25s ease}
+.t-success{border-color:rgba(52,211,153,.5);color:var(--green)} .t-error{border-color:rgba(248,113,113,.5);color:var(--red)} .t-info{border-color:rgba(34,211,238,.4);color:var(--cyan)}
+
+/* ═══════════════════════════════════════
+   FOOTER
+═══════════════════════════════════════ */
+footer{text-align:center;padding:30px 0;border-top:1px solid var(--border);margin-top:40px;font-size:12px;color:var(--muted)}
+footer a{color:var(--purple-l);text-decoration:none} footer a:hover{color:var(--cyan)}
+
+/* ═══════════════════════════════════════
+   ANIMATIONS
+═══════════════════════════════════════ */
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.45;transform:scale(.8)}}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes slideIn{from{transform:translateX(16px);opacity:0}to{transform:translateX(0);opacity:1}}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.fade-in{animation:fadeIn .35s ease both}
+
+/* ═══════════════════════════════════════
+   RESPONSIVE
+═══════════════════════════════════════ */
+@media(max-width:700px){
+  .two-col{grid-template-columns:1fr}
+  .vote-grid{grid-template-columns:1fr 1fr}
+  .q-text{font-size:18px}
+  .stats-row{grid-template-columns:repeat(2,1fr)}
+  .adv-grid{grid-template-columns:1fr 1fr}
+  .admin-questions{grid-template-columns:1fr}
+  .arc-bar{justify-content:flex-start}
+}
+@media(max-width:420px){
+  .stats-row{grid-template-columns:1fr 1fr}
+  .adv-grid{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+
+<div id="toast-ct"></div>
+
+<!-- ═══ HEADER ═══════════════════════════════════════════ -->
+<header>
+  <div class="wrap">
+    <div class="hdr">
+      <div class="logo">
+        <div class="logo-icon">🔮</div>
+        <div>
+          <h1>Arc Prophet</h1>
+          <p>Prediction Arena · Arc Testnet</p>
+        </div>
+      </div>
+      <div class="hdr-right">
+        <span id="wallet-addr"></span>
+        <button id="btn-connect" onclick="connectWallet()">Connect Wallet</button>
+      </div>
+    </div>
+  </div>
+</header>
+
+<div class="wrap">
+
+<!-- ═══ ARC ADVANTAGE BAR ════════════════════════════════ -->
+<div class="arc-bar">
+  <div class="arc-pill"><div class="dot"></div>Chain: <span class="val">Arc Testnet 5042002</span></div>
+  <div class="arc-pill"><div class="dot"></div>Gas token: <span class="val">USDC — Not ETH</span></div>
+  <div class="arc-pill"><div class="dot"></div>Finality: <span class="val">Deterministic</span></div>
+  <div class="arc-pill"><div class="dot"></div>Your gas today: <span class="val gas-live" id="gas-today">0.000000 USDC</span></div>
+  <div class="arc-pill"><div class="dot"></div>Total TXs: <span class="val" id="total-votes-disp">—</span></div>
+</div>
+
+<!-- ═══ ADMIN PANEL (owner only) ═════════════════════════ -->
+<div id="admin-panel">
+  <div class="admin-title">⚡ Admin Controls — Owner Only</div>
+
+  <div class="admin-row">
+    <input id="a-q-text" class="a-inp flex1" placeholder="Type today's question..."/>
+    <select id="a-q-cat" class="a-sel">
+      <option value="0">CRYPTO</option>
+      <option value="1">MACRO</option>
+      <option value="2">WORLD</option>
+      <option value="3">ARC</option>
+    </select>
+    <button class="btn-admin" onclick="adminSetQuestion()">Set Question On-Chain</button>
+  </div>
+
+  <p class="admin-hint">Quick-pick sample questions:</p>
+  <div class="admin-questions">
+    <button class="q-preset" onclick="fillQ('Will BTC close above $95,000 today?',0)">Will BTC close above $95,000 today?</button>
+    <button class="q-preset" onclick="fillQ('Will ETH daily fees exceed $5M today?',0)">Will ETH daily fees exceed $5M today?</button>
+    <button class="q-preset" onclick="fillQ('Will Arc Testnet process more than 5,000 TXs today?',3)">Will Arc Testnet hit 5,000 TXs today?</button>
+    <button class="q-preset" onclick="fillQ('Will global crypto market cap rise today?',0)">Will global crypto market cap rise?</button>
+    <button class="q-preset" onclick="fillQ('Will the US Dollar Index (DXY) close above 100 today?',1)">Will DXY close above 100 today?</button>
+    <button class="q-preset" onclick="fillQ('Will BTC dominance stay above 55% today?',0)">Will BTC dominance stay above 55%?</button>
+    <button class="q-preset" onclick="fillQ('Will any new L2 mainnet launch this week?',2)">Will any new L2 launch this week?</button>
+    <button class="q-preset" onclick="fillQ('Will Arc Discord reach 10,000 members this week?',3)">Will Arc Discord hit 10,000 members?</button>
+  </div>
+
+  <div class="admin-row" style="margin-top:14px">
+    <label style="font-size:13px;color:var(--muted)">Resolve today as:</label>
+    <select id="a-resolve-ans" class="a-sel">
+      <option value="true">YES ✅</option>
+      <option value="false">NO ❌</option>
+    </select>
+    <button class="btn-admin" onclick="adminResolve()">Resolve On-Chain</button>
+  </div>
+</div>
+
+<!-- ═══ STATS BAR ═════════════════════════════════════════ -->
+<div class="stats-row" id="stats-row">
+  <div class="stat-card">
+    <div class="stat-ico ico-p">⚡</div>
+    <div><div class="stat-lbl">XP Points</div><div class="stat-val v-c" id="s-xp">—</div></div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-ico ico-a">🔥</div>
+    <div><div class="stat-lbl">Day Streak</div><div class="stat-val v-a" id="s-streak">—</div></div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-ico ico-g">🎯</div>
+    <div><div class="stat-lbl">Accuracy</div><div class="stat-val" id="s-acc">—</div></div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-ico ico-p">🏆</div>
+    <div><div class="stat-lbl">Prophet Rank</div><div class="stat-val" id="s-rank" style="font-size:15px">—</div></div>
+  </div>
+</div>
+
+<!-- ═══ TODAY'S QUESTION CARD ════════════════════════════ -->
+<div id="q-card" class="card">
+
+  <!-- Connect prompt -->
+  <div id="state-connect" class="conn-req">
+    <div class="big-icon">🔮</div>
+    <h2>Connect Your Wallet</h2>
+    <p>Connect MetaMask to Arc Testnet and start predicting.<br>Gas is paid in USDC — no ETH needed.</p>
+    <button class="btn-big-connect" onclick="connectWallet()">Connect MetaMask</button>
+    <a href="https://faucet.circle.com" target="_blank" style="font-size:12px;color:var(--muted);text-decoration:none">Get free testnet USDC from faucet.circle.com ↗</a>
+  </div>
+
+  <!-- Loading -->
+  <div id="state-loading" style="display:none;padding:24px 0;color:var(--muted);font-size:14px">
+    <span class="spinner"></span> Loading from Arc Testnet...
+  </div>
+
+  <!-- No question -->
+  <div id="state-none" style="display:none">
+    <div class="empty">
+      <div style="font-size:40px;margin-bottom:12px">🔮</div>
+      <p style="font-size:16px;font-weight:700;margin-bottom:6px">No prediction yet for today</p>
+      <p>The oracle is preparing today's question. Check back soon.</p>
+    </div>
+  </div>
+
+  <!-- Active question -->
+  <div id="state-active" style="display:none">
+    <div class="q-top">
+      <span id="cat-badge" class="cat-badge cat-0">CRYPTO</span>
+      <div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap">
+        <div class="live-badge"><div class="live-dot"></div>LIVE</div>
+        <div class="cdwn">Resolves in <span class="cdwn-t" id="cdwn-time">--:--:--</span></div>
+      </div>
+    </div>
+
+    <p class="q-text" id="q-text-active">—</p>
+
+    <div style="margin-bottom:20px">
+      <div class="conf-hdr">
+        <span>Community confidence</span>
+        <span id="conf-pct">YES 50% · NO 50%</span>
+      </div>
+      <div class="conf-bar"><div class="conf-fill" id="conf-fill" style="width:50%"></div></div>
+      <div class="conf-counts">
+        <span class="cnt-y" id="cnt-y">YES: 0</span>
+        <span class="cnt-t" id="cnt-t">0 predictions</span>
+        <span class="cnt-n" id="cnt-n">NO: 0</span>
+      </div>
+    </div>
+
+    <div class="vote-grid">
+      <button class="btn-v btn-yes" id="btn-yes" onclick="vote(true)">✅ YES</button>
+      <button class="btn-v btn-no"  id="btn-no"  onclick="vote(false)">❌ NO</button>
+    </div>
+
+    <div class="gas-row">
+      <span>Estimated gas (Arc USDC)</span>
+      <span class="val" id="gas-est-disp">Estimating...</span>
+    </div>
+
+    <div id="tx-box">
+      <div class="tx-lbl" id="tx-lbl">—</div>
+      <div class="tx-row">
+        <span class="tx-hash" id="tx-hash">—</span>
+        <a id="tx-link" class="tx-link" href="#" target="_blank" style="display:none">View on ArcScan ↗</a>
+      </div>
+    </div>
+
+    <button id="btn-claim" onclick="claimResult()">🏆 Claim Result + XP</button>
+  </div>
+
+  <!-- Already voted state -->
+  <div id="state-voted" style="display:none">
+    <div class="q-top">
+      <span id="cat-badge-v" class="cat-badge cat-0">CRYPTO</span>
+      <div class="cdwn">Resolves in <span class="cdwn-t" id="cdwn-time-v">--:--:--</span></div>
+    </div>
+
+    <p class="q-text" id="q-text-voted">—</p>
+
+    <div style="margin-bottom:20px">
+      <div class="conf-hdr">
+        <span>Community confidence</span>
+        <span id="conf-pct-v">—</span>
+      </div>
+      <div class="conf-bar"><div class="conf-fill" id="conf-fill-v" style="width:50%"></div></div>
+      <div class="conf-counts">
+        <span class="cnt-y" id="cnt-y-v">YES: 0</span>
+        <span class="cnt-t" id="cnt-t-v">0 predictions</span>
+        <span class="cnt-n" id="cnt-n-v">NO: 0</span>
+      </div>
+    </div>
+
+    <div class="voted-box">
+      <div class="voted-label">Your prediction today</div>
+      <div class="voted-answer" id="my-ans">YES ✅</div>
+      <div style="font-size:12px;color:var(--muted);margin-top:8px">Come back tomorrow for a fresh prediction!</div>
+    </div>
+
+    <div id="result-banner"></div>
+
+    <button id="btn-claim-v" style="display:none;width:100%;margin-top:14px;padding:15px;background:rgba(251,191,36,.14);border:1.5px solid rgba(251,191,36,.45);border-radius:12px;color:var(--amber);font-size:16px;font-weight:800;cursor:pointer;" onclick="claimResult()">
+      🏆 Claim Result + XP
+    </button>
+  </div>
+
+</div><!-- end #q-card -->
+
+<!-- ═══ ARC ADVANTAGES SHOWCASE ══════════════════════════ -->
+<div class="adv-grid">
+  <div class="adv-card">
+    <div class="adv-icon">💵</div>
+    <div class="adv-title">Gas Paid in USDC</div>
+    <div class="adv-desc">No ETH needed. Every TX fee is denominated in USDC — predictable, stable, fiat-friendly.</div>
+    <div class="adv-val" id="adv-gas-total">0.000000 USDC spent</div>
+  </div>
+  <div class="adv-card">
+    <div class="adv-icon">⚡</div>
+    <div class="adv-title">Deterministic Finality</div>
+    <div class="adv-desc">Transactions finalize immediately. No re-orgs. Your prediction is confirmed the instant it lands.</div>
+    <div class="adv-val" id="adv-finality">Instant confirmation</div>
+  </div>
+  <div class="adv-card">
+    <div class="adv-icon">🌍</div>
+    <div class="adv-title">Multi-Currency Ready</div>
+    <div class="adv-desc">Arc natively supports USDC and EURC. Prediction markets can settle in any stablecoin.</div>
+    <div class="adv-val">USDC · EURC</div>
+  </div>
+  <div class="adv-card">
+    <div class="adv-icon">🔍</div>
+    <div class="adv-title">Transparent by Default</div>
+    <div class="adv-desc">Every vote is on-chain. Every streak is on-chain. Nothing is fake — verify any TX on ArcScan.</div>
+    <div class="adv-val"><a href="https://testnet.arcscan.app" target="_blank" style="color:var(--cyan);text-decoration:none">testnet.arcscan.app ↗</a></div>
+  </div>
+</div>
+
+<!-- ═══ MY STATS + LEADERBOARD ══════════════════════════ -->
+<div class="two-col">
+
+  <div class="card">
+    <div class="card-label">My Prophet Stats</div>
+    <div id="my-stats">
+      <div class="empty">Connect wallet to see your stats</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-label">🏆 Top Prophets</div>
+    <div id="leaderboard">
+      <div class="empty"><span class="spinner"></span></div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ═══ PREDICTION HISTORY ═══════════════════════════════ -->
+<div class="card" style="margin-bottom:24px">
+  <div class="card-label">My Prediction History — On-Chain TXs</div>
+  <div id="history">
+    <div class="empty">Your predictions with TxHash links will appear here</div>
+  </div>
+</div>
+
+</div><!-- end .wrap -->
+
+<!-- ═══ FOOTER ════════════════════════════════════════════ -->
+<footer>
+  <div class="wrap">
+    <p>Arc Prophet · Built on <a href="https://testnet.arcscan.app" target="_blank">Arc Testnet</a> · Gas in USDC · <a href="https://faucet.circle.com" target="_blank">Get Testnet USDC</a> · <a href="https://docs.arc.io" target="_blank">Arc Docs</a></p>
+    <p style="margin-top:6px;opacity:.4">Chain 5042002 · rpc.testnet.arc.network · Gas token: USDC (not ETH)</p>
+  </div>
+</footer>
+
+<!-- ═══════════════════════════════════════════════════════
+     JAVASCRIPT
+═══════════════════════════════════════════════════════ -->
+<script>
+// ─────────────────────────────────────────────────────────
+// ⚠️  CONFIGURE BEFORE DEPLOYING
+// ─────────────────────────────────────────────────────────
+const CFG = {
+  CONTRACT:    "YOUR_CONTRACT_ADDRESS_HERE",   // After deploying PredictionArena.sol
+  OWNER:       "YOUR_WALLET_ADDRESS_HERE",     // Your wallet address (for admin panel)
+  CHAIN_ID:    5042002n,
+  CHAIN_HEX:   "0x4CEF52",                     // 5042002 in hex
+  RPC:         "https://rpc.testnet.arc.network",
+  EXPLORER:    "https://testnet.arcscan.app",
+  USDC:        "0x3600000000000000000000000000000000000000",
+};
+
+const FIREBASE_CFG = {
+  apiKey:            "YOUR_FIREBASE_API_KEY",
+  authDomain:        "YOUR_PROJECT.firebaseapp.com",
+  projectId:         "YOUR_PROJECT_ID",
+  storageBucket:     "YOUR_PROJECT.appspot.com",
+  messagingSenderId: "YOUR_SENDER_ID",
+  appId:             "YOUR_APP_ID",
+};
+
+// ─────────────────────────────────────────────────────────
+// CONTRACT ABI
+// ─────────────────────────────────────────────────────────
+const ABI = [
+  "function predict(uint256 day, bool answer) external",
+  "function claimResult(uint256 day) external",
+  "function setQuestion(uint256 day, string calldata text, uint8 category) external",
+  "function resolveQuestion(uint256 day, bool answer) external",
+  "function getQuestion(uint256 day) external view returns (string memory text, uint8 category, bool resolved, bool answer, uint256 yesVotes, uint256 noVotes)",
+  "function getUserStats(address user) external view returns (uint256 total, uint256 correct, uint256 streak, uint256 longestStreak, uint256 xp, uint256 accuracy)",
+  "function getFullUserData(address user, uint256 day) external view returns (uint256 total, uint256 correct, uint256 streak, uint256 longestStreak, uint256 xp, uint256 accuracy, bool votedToday, bool myAnswer, bool canClaim)",
+  "function hasUserVoted(address user, uint256 day) external view returns (bool voted, bool answer)",
+  "function canClaimResult(address user, uint256 day) external view returns (bool)",
+  "function getVoteCounts(uint256 day) external view returns (uint256 yes, uint256 no)",
+  "function todayDay() external view returns (uint256)",
+  "function totalVotes() external view returns (uint256)",
+  "event PredictionMade(address indexed user, uint256 indexed day, bool answer, uint8 category, uint256 yesTotal, uint256 noTotal, uint256 timestamp)",
+  "event QuestionResolved(uint256 indexed day, bool answer, uint256 yesVotes, uint256 noVotes)",
+  "event ResultClaimed(address indexed user, uint256 indexed day, bool correct, uint256 xpEarned, uint256 newXPTotal)",
+  "event StreakMilestone(address indexed user, uint256 streak)",
+];
+
+// ─────────────────────────────────────────────────────────
+// CATEGORIES
+// ─────────────────────────────────────────────────────────
+const CATS = {
+  0: { name:"CRYPTO", cls:"cat-0" },
+  1: { name:"MACRO",  cls:"cat-1" },
+  2: { name:"WORLD",  cls:"cat-2" },
+  3: { name:"ARC",    cls:"cat-3" },
+};
+
+// ─────────────────────────────────────────────────────────
+// RANKS
+// ─────────────────────────────────────────────────────────
+function rank(xp) {
+  if (xp < 100)  return { title:"Novice",     color:"#64748b", next:100,  icon:"👁️" };
+  if (xp < 300)  return { title:"Analyst",    color:"#22d3ee", next:300,  icon:"🔮" };
+  if (xp < 700)  return { title:"Strategist", color:"#8b5cf6", next:700,  icon:"⚡" };
+  if (xp < 1500) return { title:"Oracle",     color:"#fbbf24", next:1500, icon:"🌟" };
+  return               { title:"Arc Prophet",color:"#f87171", next:9999, icon:"🔱" };
+}
+
+// ─────────────────────────────────────────────────────────
+// STATE
+// ─────────────────────────────────────────────────────────
+let provider, signer, contract, iface, db;
+let userAddress = null;
+let todayDayNum = Math.floor(Date.now() / 1000 / 86400);
+let totalGasUSDC = 0;
+let lbUnsubscribe = null;
+
+// ─────────────────────────────────────────────────────────
+// INIT
+// ─────────────────────────────────────────────────────────
+async function init() {
+  iface = new ethers.Interface(ABI);
+  setInterval(updateCountdown, 1000);
+  updateCountdown();
+
+  // Init Firebase
+  try {
+    firebase.initializeApp(FIREBASE_CFG);
+    db = firebase.firestore();
+    loadLeaderboard();
+  } catch(e) {
+    console.warn("Firebase not configured:", e.message);
+    document.getElementById("leaderboard").innerHTML = `<div class="empty">Configure Firebase to enable leaderboard</div>`;
+  }
+
+  // Auto-connect if previously authorized
+  if (window.ethereum?.selectedAddress) {
+    connectWallet();
+  }
+}
+
+// ─────────────────────────────────────────────────────────
+// CONNECT WALLET
+// ─────────────────────────────────────────────────────────
+async function connectWallet() {
+  if (!window.ethereum) {
+    toast("MetaMask not found. Please install it.", "error");
+    return;
+  }
+  try {
+    provider = new ethers.BrowserProvider(window.ethereum);
+    await provider.send("eth_requestAccounts", []);
+    signer  = await provider.getSigner();
+    userAddress = await signer.getAddress();
+
+    // Switch to Arc if needed
+    const net = await provider.getNetwork();
+    if (net.chainId !== CFG.CHAIN_ID) {
+      await switchToArc();
+      provider = new ethers.BrowserProvider(window.ethereum);
+      signer   = await provider.getSigner();
+      userAddress = await signer.getAddress();
+    }
+
+    // Init contract (only if address is set)
+    if (CFG.CONTRACT !== "YOUR_CONTRACT_ADDRESS_HERE") {
+      contract = new ethers.Contract(CFG.CONTRACT, ABI, signer);
+    }
+
+    // Update header UI
+    document.getElementById("btn-connect").style.display = "none";
+    const addrEl = document.getElementById("wallet-addr");
+    addrEl.style.display = "inline";
+    addrEl.textContent   = shorten(userAddress);
+
+    // Show admin panel for owner
+    if (CFG.OWNER !== "YOUR_WALLET_ADDRESS_HERE" &&
+        userAddress.toLowerCase() === CFG.OWNER.toLowerCase()) {
+      document.getElementById("admin-panel").style.display = "block";
+    }
+
+    toast("Connected to Arc Testnet ⚡", "success");
+
+    // Load all data in parallel
+    await Promise.all([loadQuestion(), loadMyData(), loadHistory()]);
+    estimateGas();
+
+    // Listen for chain / account changes
+    window.ethereum.on("chainChanged",    () => location.reload());
+    window.ethereum.on("accountsChanged", () => location.reload());
+
+  } catch(e) {
+    console.error(e);
+    toast(e.message?.substring(0,90) || "Connection failed", "error");
+  }
+}
+
+// ─────────────────────────────────────────────────────────
+// SWITCH TO ARC TESTNET
+// ─────────────────────────────────────────────────────────
+async function switchToArc() {
+  try {
+    await window.ethereum.request({
+      method: "wallet_switchEthereumChain",
+      params: [{ chainId: CFG.CHAIN_HEX }],
+    });
+  } catch(e) {
+    if (e.code === 4902 || e.code === -32603) {
+      await window.ethereum.request({
+        method: "wallet_addEthereumChain",
+        params: [{
+          chainId:         CFG.CHAIN_HEX,
+          chainName:       "Arc Testnet",
+          nativeCurrency:  { name:"USDC", symbol:"USDC", decimals:18 },
+          rpcUrls:         [CFG.RPC],
+          blockExplorerUrls:[CFG.EXPLORER],
+        }],
+      });
+    } else { throw e; }
+  }
+}
+
+// ─────────────────────────────────────────────────────────
+// LOAD TODAY'S QUESTION
+// ─────────────────────────────────────────────────────────
+async function loadQuestion() {
+  showState("loading");
+
+  if (!contract) {
+    // Demo mode
+    renderActiveQuestion("Will BTC close above $95,000 today?", 0, false, false, 47, 31);
+    toast("Demo mode — deploy contract to activate on-chain voting", "info");
+    return;
+  }
+
+  try {
+    const day = await contract.todayDay();
+    todayDayNum = Number(day);
+
+    // Single efficient call
+    const [total, correct, streak, longest, xp, acc, voted, myAnswer, canClaim] =
+      await contract.getFullUserData(userAddress, day);
+
+    const [text, catNum, resolved, answer, yesV, noV] = await contract.getQuestion(day);
+
+    // Update total votes display
+    const tv = await contract.totalVotes();
+    document.getElementById("total-votes-disp").textContent = Number(tv).toLocaleString();
+
+    if (!text || text.length === 0) {
+      showState("none");
+      return;
+    }
+
+    if (voted) {
+      renderVotedQuestion(text, Number(catNum), resolved, answer, Number(yesV), Number(noV), myAnswer, canClaim);
+    } else {
+      renderActiveQuestion(text, Number(catNum), resolved, answer, Number(yesV), Number(noV));
+    }
+
+    // Subscribe to live vote events
+    subscribeVotes(day);
+
+  } catch(e) {
+    console.error("loadQuestion:", e);
+    renderActiveQuestion("Will BTC close above $95,000 today?", 0, false, false, 0, 0);
+    toast("Could not load from contract — demo mode", "info");
+  }
+}
+
+// ─────────────────────────────────────────────────────────
+// RENDER STATES
+// ─────────────────────────────────────────────────────────
+function showState(s) {
+  ["connect","loading","none","active","voted"].forEach(id =>
+    document.getElementById("state-"+id).style.display = "none"
+  );
+  document.getElementById("state-"+s).style.display = "block";
+}
+
+function renderActiveQuestion(text, cat, resolved, answer, yes, no) {
+  document.getElementById("q-text-active").textContent = text;
+  const badge = document.getElementById("cat-badge");
+  badge.textContent = CATS[cat]?.name || "CRYPTO";
+  badge.className   = "cat-badge " + (CATS[cat]?.cls || "cat-0");
+  updateConfBar("", yes, no);
+  if (resolved) {
+    document.getElementById("btn-yes").disabled = true;
+    document.getElementById("btn-no").disabled  = true;
+    document.getElementById("btn-yes").textContent = "Question Resolved";
+    document.getElementById("btn-no").textContent  = "Question Resolved";
+  }
+  showState("active");
+  document.getElementById("state-active").classList.add("fade-in");
+}
+
+function renderVotedQuestion(text, cat, resolved, answer, yes, no, myAnswer, canClaim) {
+  document.getElementById("q-text-voted").textContent = text;
+  const badge = document.getElementById("cat-badge-v");
+  badge.textContent = CATS[cat]?.name || "CRYPTO";
+  badge.className   = "cat-badge " + (CATS[cat]?.cls || "cat-0");
+  updateConfBar("-v", yes, no);
+
+  const ansEl = document.getElementById("my-ans");
+  ansEl.textContent = myAnswer ? "YES ✅" : "NO ❌";
+  ansEl.style.color  = myAnswer ? "var(--green)" : "var(--red)";
+
+  if (resolved) {
+    const correct = (myAnswer === answer);
+    const banner  = document.getElementById("result-banner");
+    banner.className = "result-baner " + (correct ? "res-correct" : "res-wrong");
+    banner.innerHTML = `
+      <div class="res-h" style="color:${correct?"var(--green)":"var(--red)"}">
+        ${correct ? "🎉 Correct Prediction!" : "❌ Wrong Prediction"}
+      </div>
+      <div style="font-size:13px;color:var(--muted)">Answer was: ${answer ? "YES ✅" : "NO ❌"}</div>
+      ${correct ? '<div style="font-size:13px;color:var(--green);margin-top:4px">+25 XP — claim below!</div>' : ""}
+    `;
+    if (canClaim) {
+      document.getElementById("btn-claim-v").style.display = "block";
+    }
+  }
+  showState("voted");
+  document.getElementById("state-voted").classList.add("fade-in");
+}
+
+// ─────────────────────────────────────────────────────────
+// CONFIDENCE BAR
+// ─────────────────────────────────────────────────────────
+function updateConfBar(sfx, yes, no) {
+  const total  = yes + no;
+  const yesPct = total > 0 ? Math.round((yes/total)*100) : 50;
+  const el = (id) => document.getElementById(id + sfx);
+  el("conf-fill").style.width = yesPct + "%";
+  el("conf-pct").textContent  = `YES ${yesPct}% · NO ${100-yesPct}%`;
+  el("cnt-y").textContent     = `YES: ${yes}`;
+  el("cnt-n").textContent     = `NO: ${no}`;
+  el("cnt-t").textContent     = `${total} prediction${total!==1?"s":""}`;
+}
+
+// ─────────────────────────────────────────────────────────
+// LIVE EVENT SUBSCRIPTION
+// ─────────────────────────────────────────────────────────
+function subscribeVotes(day) {
+  if (!contract) return;
+  const filter = contract.filters.PredictionMade(null, day);
+  contract.on(filter, (user, d, ans, cat, yesT, noT) => {
+    updateConfBar("",   Number(yesT), Number(noT));
+    updateConfBar("-v", Number(yesT), Number(noT));
+  });
+}
+
+// ─────────────────────────────────────────────────────────
+// GAS ESTIMATION (Arc USDC — the unique feature)
+// ─────────────────────────────────────────────────────────
+async function estimateGas() {
+  if (!contract || !userAddress) return;
+  try {
+    const feeData  = await provider.getFeeData();
+    const est      = await contract.predict.estimateGas(BigInt(todayDayNum), true);
+    const gasLimit = est * 130n / 100n;                     // +30% buffer
+    const gasCostWei = gasLimit * (feeData.gasPrice || 1000000000n);
+    const gasCostUSDC = Number(ethers.formatEther(gasCostWei));
+    document.getElementById("gas-est-disp").textContent = `~${gasCostUSDC.toFixed(6)} USDC`;
+  } catch {
+    document.getElementById("gas-est-disp").textContent = "~0.000050 USDC";
+  }
+}
+
+// ─────────────────────────────────────────────────────────
+// VOTE — PRIMARY ON-CHAIN TX
+// ─────────────────────────────────────────────────────────
+async function vote(answer) {
+  if (!userAddress) { toast("Connect your wallet first", "error"); return; }
+  if (!contract) {
+    toast("Deploy PredictionArena.sol and set CONTRACT address in CFG", "error");
+    return;
+  }
+
+  const yBtn = document.getElementById("btn-yes");
+  const nBtn = document.getElementById("btn-no");
+  yBtn.disabled = true;
+  nBtn.disabled = true;
+
+  try {
+    toast(`Sending ${answer?"YES ✅":"NO ❌"} prediction to Arc...`, "info");
+
+    // ── ABI Encoding via ethers.Interface ──────────────────
+    const data = iface.encodeFunctionData("predict", [BigInt(todayDayNum), answer]);
+
+    // ── Gas estimation with 30% buffer (BigInt) ────────────
+    const feeData  = await provider.getFeeData();
+    const estGas   = await contract.predict.estimateGas(BigInt(todayDayNum), answer);
+    const gasLimit = estGas * 130n / 100n;
+
+    const gasCostWei  = gasLimit * (feeData.gasPrice || 1000000000n);
+    const gasCostUSDC = Number(ethers.formatEther(gasCostWei));
+    document.getElementById("gas-est-disp").textContent = `~${gasCostUSDC.toFixed(6)} USDC`;
+
+    // ── Send TX ────────────────────────────────────────────
+    const tx = await contract.predict(BigInt(todayDayNum), answer, { gasLimit });
+    showTx("pending", tx.hash, "Pending on Arc Testnet...");
+
+    // ── Wait (deterministic finality = fast!) ──────────────
+    const receipt = await tx.wait();
+    const actualGas = Number(ethers.formatEther(
+      receipt.gasUsed * (feeData.gasPrice || 1000000000n)
+    ));
+
+    // Track USDC gas spent
+    totalGasUSDC += actualGas;
+    document.getElementById("gas-today").textContent    = totalGasUSDC.toFixed(6) + " USDC";
+    document.getElementById("adv-gas-total").textContent = totalGasUSDC.toFixed(6) + " USDC spent";
+
+    showTx("success", receipt.hash, `Confirmed on Arc! Gas: ${actualGas.toFixed(6)} USDC ⚡`);
+    toast(`${answer?"YES ✅":"NO ❌"} locked on-chain! +10 XP earned`, "success");
+
+    // ── Save to Firebase ───────────────────────────────────
+    await saveToFirebase(receipt, answer, actualGas);
+
+    // ── Refresh UI ─────────────────────────────────────────
+    await Promise.all([loadMyData(), loadQuestion()]);
+
+  } catch(e) {
+    console.error("vote:", e);
+    yBtn.disabled = false;
+    nBtn.disabled = false;
+    const msg = e.reason || e.message || "Transaction failed";
+    showTx("error", null, msg.substring(0,100));
+    toast(msg.substring(0,80), "error");
+  }
+}
+
+// ─────────────────────────────────────────────────────────
+// CLAIM RESULT — SECOND ON-CHAIN TX
+// ─────────────────────────────────────────────────────────
+async function claimResult() {
+  if (!contract || !userAddress) return;
+  try {
+    toast("Claiming result on Arc...", "info");
+
+    const feeData  = await provider.getFeeData();
+    const estGas   = await contract.claimResult.estimateGas(BigInt(todayDayNum));
+    const gasLimit = estGas * 130n / 100n;
+
+    const tx      = await contract.claimResult(BigInt(todayDayNum), { gasLimit });
+    showTx("pending", tx.hash, "Claiming result...");
+
+    const receipt = await tx.wait();
+    const actualGas = Number(ethers.formatEther(
+      receipt.gasUsed * (feeData.gasPrice || 1000000000n)
+    ));
+
+    totalGasUSDC += actualGas;
+    document.getElementById("gas-today").textContent    = totalGasUSDC.toFixed(6) + " USDC";
+    document.getElementById("adv-gas-total").textContent = totalGasUSDC.toFixed(6) + " USDC spent";
+
+    showTx("success", receipt.hash, "Result claimed! XP added to your on-chain profile.");
+    toast("Result claimed! ✅ XP updated on Arc", "success");
+
+    document.getElementById("btn-claim").style.display   = "none";
+    document.getElementById("btn-claim-v").style.display = "none";
+
+    if (db) {
+      await db.collection("users").doc(userAddress.toLowerCase()).set({
+        lastClaimed: todayDayNum,
+        claimTx: receipt.hash,
+      }, { merge: true });
+    }
+
+    await loadMyData();
+
+  } catch(e) {
+    const msg = e.reason || e.message || "Failed";
+    toast(msg.substring(0,80), "error");
+  }
+}
+
+// ─────────────────────────────────────────────────────────
+// TX STATUS BOX
+// ─────────────────────────────────────────────────────────
+function showTx(type, hash, msg) {
+  const box = document.getElementById("tx-box");
+  box.style.display = "block";
+  box.className      = type;
+  document.getElementById("tx-lbl").textContent = msg;
+
+  const hashEl = document.getElementById("tx-hash");
+  const linkEl = document.getElementById("tx-link");
+
+  if (hash) {
+    hashEl.textContent = hash.slice(0,18)+"..."+hash.slice(-8);
+    linkEl.href        = `${CFG.EXPLORER}/tx/${hash}`;
+    linkEl.style.display = "inline";
+  } else {
+    hashEl.textContent   = "";
+    linkEl.style.display = "none";
+  }
+}
+
+// ─────────────────────────────────────────────────────────
+// FIREBASE — SAVE PREDICTION
+// ─────────────────────────────────────────────────────────
+async function saveToFirebase(receipt, answer, gasCost) {
+  if (!db) return;
+  try {
+    const addr = userAddress.toLowerCase();
+    await db.collection("users").doc(addr)
+            .collection("predictions").doc(String(todayDayNum))
+            .set({
+              address:      addr,
+              day:          todayDayNum,
+              answer:       answer,
+              txHash:       receipt.hash,
+              gasCostUSDC:  gasCost,
+              timestamp:    firebase.firestore.FieldValue.serverTimestamp(),
+              result:       null,
+              correct:      null,
+            });
+    await refreshLeaderboard();
+    await loadHistory();
+  } catch(e) {
+    console.warn("Firebase save:", e.message);
+  }
+}
+
+// ─────────────────────────────────────────────────────────
+// LOAD MY STATS (from contract)
+// ─────────────────────────────────────────────────────────
+async function loadMyData() {
+  const container = document.getElementById("my-stats");
+  if (!userAddress) {
+    container.innerHTML = `<div class="empty">Connect wallet</div>`;
+    return;
+  }
+
+  if (!contract) {
+    renderMyStats(container, 0,0,0,0,0,0);
+    return;
+  }
+
+  try {
+    const [total,correct,streak,longest,xp,acc] = await contract.getUserStats(userAddress);
+    const n = (v) => Number(v);
+    const [t,c,s,l,x,a] = [n(total),n(correct),n(streak),n(longest),n(xp),n(acc)];
+
+    // Update top stats bar
+    document.getElementById("s-xp").textContent     = x.toLocaleString();
+    document.getElementById("s-streak").textContent = `${s} 🔥`;
+    document.getElementById("s-acc").textContent    = `${a}%`;
+    const r = rank(x);
+    const rankEl = document.getElementById("s-rank");
+    rankEl.textContent = `${r.icon} ${r.title}`;
+    rankEl.style.color  = r.color;
+
+    renderMyStats(container, t,c,s,l,x,a);
+
+    // Push to Firebase leaderboard
+    if (db) {
+      const r2 = rank(x);
+      await db.collection("leaderboard").doc(userAddress.toLowerCase()).set({
+        address:          userAddress.toLowerCase(),
+        xp:               x,
+        streak:           s,
+        accuracy:         a,
+        totalPredictions: t,
+        rank:             r2.title,
+        updatedAt:        firebase.firestore.FieldValue.serverTimestamp(),
+      });
+    }
+
+  } catch(e) {
+    console.error("loadMyData:", e);
+    container.innerHTML = `<div class="empty">Could not load stats</div>`;
+  }
+}
+
+function renderMyStats(container, total,correct,streak,longest,xp,acc) {
+  const r     = rank(xp);
+  const pct   = Math.min(100, r.next > 0 ? Math.round((xp/r.next)*100) : 100);
+
+  container.innerHTML = `
+    <div style="margin-bottom:18px">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">
+        <span style="font-size:17px;font-weight:800;color:${r.color}">${r.icon} ${r.title}</span>
+        <span style="font-size:13px;color:var(--muted)">${xp.toLocaleString()} XP</span>
+      </div>
+      <div class="xp-bar-bg"><div class="xp-bar-fill" style="width:${pct}%"></div></div>
+      <div class="xp-lbls"><span>${xp} XP</span><span>${r.next} XP next rank</span></div>
+    </div>
+    <div class="mini-grid">
+      <div class="mini-cell mc-p"><div class="mc-val" style="color:var(--purple-l)">${total}</div><div class="mc-lbl">Predictions</div></div>
+      <div class="mini-cell mc-g"><div class="mc-val" style="color:var(--green)">${correct}</div><div class="mc-lbl">Correct</div></div>
+      <div class="mini-cell mc-a"><div class="mc-val" style="color:var(--amber)">${streak} 🔥</div><div class="mc-lbl">Streak</div></div>
+      <div class="mini-cell mc-c"><div class="mc-val" style="color:var(--cyan)">${acc}%</div><div class="mc-lbl">Accuracy</div></div>
+    </div>
+    <div class="fp-row">🏆 Best streak: ${longest} days &nbsp;·&nbsp; ✅ ${correct}/${total} correct</div>
+  `;
+}
+
+// ─────────────────────────────────────────────────────────
+// LEADERBOARD (Firebase real-time)
+// ─────────────────────────────────────────────────────────
+function loadLeaderboard() {
+  if (!db) return;
+  const container = document.getElementById("leaderboard");
+  try {
+    if (lbUnsubscribe) lbUnsubscribe();
+    lbUnsubscribe = db.collection("leaderboard")
+      .orderBy("xp","desc").limit(10)
+      .onSnapshot(snap => {
+        renderLeaderboard(container, snap.docs.map(d => d.data()));
+      });
+  } catch(e) {
+    container.innerHTML = `<div class="empty">Leaderboard loading...</div>`;
+  }
+}
+
+function renderLeaderboard(container, rows) {
+  if (!rows.length) {
+    container.innerHTML = `<div class="empty">No entries yet — be the first prophet!</div>`;
+    return;
+  }
+  const medaClass = i => i===0?"lb-1":i===1?"lb-2":i===2?"lb-3":"lb-def";
+  const medal     = i => i===0?"🥇":i===1?"🥈":i===2?"🥉":"#"+(i+1);
+  const me        = (userAddress||"").toLowerCase();
+
+  container.innerHTML = rows.map((r,i) => {
+    const addr  = r.address || "";
+    const isMe  = addr.toLowerCase() === me;
+    const rk    = rank(r.xp||0);
+    return `
+      <div class="lb-row${isMe?" lb-me":""}">
+        <div class="lb-num ${medaClass(i)}">${medal(i)}</div>
+        <div style="flex:1;min-width:0">
+          <div class="lb-addr">${isMe?"You ✦":shorten(addr)}</div>
+          <div style="font-size:11px;color:${rk.color}">${rk.icon} ${rk.title}</div>
+        </div>
+        <div style="text-align:right">
+          <div class="lb-xp">${(r.xp||0).toLocaleString()} XP</div>
+          <div class="lb-acc">${r.accuracy||0}% acc</div>
+        </div>
+      </div>`;
+  }).join("");
+}
+
+async function refreshLeaderboard() { loadLeaderboard(); }
+
+// ─────────────────────────────────────────────────────────
+// PREDICTION HISTORY (Firebase)
+// ─────────────────────────────────────────────────────────
+async function loadHistory() {
+  const container = document.getElementById("history");
+  if (!db || !userAddress) {
+    container.innerHTML = `<div class="empty">Connect wallet to see your on-chain history</div>`;
+    return;
+  }
+  try {
+    const snap = await db.collection("users").doc(userAddress.toLowerCase())
+                         .collection("predictions")
+                         .orderBy("day","desc").limit(7).get();
+
+    if (snap.empty) {
+      container.innerHTML = `<div class="empty">No predictions yet — make your first above!</div>`;
+      return;
+    }
+
+    container.innerHTML = snap.docs.map(d => {
+      const p   = d.data();
+      const ans = p.answer ? "YES" : "NO";
+      const cls = p.answer ? "h-yes" : "h-no";
+      const res = p.correct===true  ? `<span class="hist-res hr-ok">✓ Correct +25XP</span>`
+                : p.correct===false ? `<span class="hist-res hr-ng">✗ Wrong</span>`
+                                    : `<span class="hist-res hr-p">⏳ Pending</span>`;
+      const txH = p.txHash ? p.txHash.slice(0,10)+"..." : "";
+      const lnk = p.txHash
+        ? `<a class="hist-link" href="${CFG.EXPLORER}/tx/${p.txHash}" target="_blank">${txH} ↗</a>`
+        : "";
+      return `
+        <div class="hist-row">
+          <span class="hist-day">Day ${p.day}</span>
+          <span class="hist-ans ${cls}">${ans}</span>
+          ${res}
+          ${lnk}
+        </div>`;
+    }).join("");
+  } catch(e) {
+    container.innerHTML = `<div class="empty">Could not load history</div>`;
+  }
+}
+
+// ─────────────────────────────────────────────────────────
+// ADMIN FUNCTIONS
+// ─────────────────────────────────────────────────────────
+async function adminSetQuestion() {
+  if (!contract) return toast("Contract not set in CFG", "error");
+  const text = document.getElementById("a-q-text").value.trim();
+  const cat  = parseInt(document.getElementById("a-q-cat").value);
+  if (!text) return toast("Enter question text", "error");
+
+  try {
+    const est      = await contract.setQuestion.estimateGas(BigInt(todayDayNum), text, cat);
+    const gasLimit = est * 130n / 100n;
+    const tx       = await contract.setQuestion(BigInt(todayDayNum), text, cat, { gasLimit });
+    toast("Setting question on Arc...", "info");
+    const receipt  = await tx.wait();
+    showTx("success", receipt.hash, "Question set on-chain ✅");
+
+    if (db) {
+      await db.collection("questions").doc(String(todayDayNum)).set({
+        text, category: cat, day: todayDayNum,
+        resolved: false, txHash: receipt.hash,
+        timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+      });
+    }
+
+    document.getElementById("a-q-text").value = "";
+    toast("Question live on Arc! ✅", "success");
+    await loadQuestion();
+  } catch(e) {
+    toast(e.reason || e.message?.substring(0,80) || "Failed", "error");
+  }
+}
+
+async function adminResolve() {
+  if (!contract) return toast("Contract not set in CFG", "error");
+  const answer = document.getElementById("a-resolve-ans").value === "true";
+  try {
+    const est      = await contract.resolveQuestion.estimateGas(BigInt(todayDayNum), answer);
+    const gasLimit = est * 130n / 100n;
+    const tx       = await contract.resolveQuestion(BigInt(todayDayNum), answer, { gasLimit });
+    toast("Resolving on Arc...", "info");
+    const receipt  = await tx.wait();
+    showTx("success", receipt.hash, `Resolved as ${answer?"YES":"NO"} ✅`);
+
+    if (db) {
+      await db.collection("questions").doc(String(todayDayNum))
+              .set({ resolved: true, answer }, { merge: true });
+    }
+
+    toast(`Resolved: ${answer?"YES ✅":"NO ❌"}`, "success");
+    await loadQuestion();
+  } catch(e) {
+    toast(e.reason || e.message?.substring(0,80) || "Failed", "error");
+  }
+}
+
+function fillQ(text, cat) {
+  document.getElementById("a-q-text").value = text;
+  document.getElementById("a-q-cat").value  = cat;
+}
+
+// ─────────────────────────────────────────────────────────
+// COUNTDOWN
+// ─────────────────────────────────────────────────────────
+function updateCountdown() {
+  const now      = new Date();
+  const midnight = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()+1));
+  const diff     = midnight - now;
+  const h = Math.floor(diff/3600000).toString().padStart(2,"0");
+  const m = Math.floor((diff%3600000)/60000).toString().padStart(2,"0");
+  const s = Math.floor((diff%60000)/1000).toString().padStart(2,"0");
+  const t = `${h}:${m}:${s}`;
+  ["cdwn-time","cdwn-time-v"].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.textContent = t;
+  });
+}
+
+// ─────────────────────────────────────────────────────────
+// TOAST
+// ─────────────────────────────────────────────────────────
+function toast(msg, type="info") {
+  const ct  = document.getElementById("toast-ct");
+  const el  = document.createElement("div");
+  el.className = `toast t-${type}`;
+  el.textContent = msg;
+  ct.appendChild(el);
+  setTimeout(() => el.remove(), 4200);
+}
+
+// ─────────────────────────────────────────────────────────
+// UTILS
+// ─────────────────────────────────────────────────────────
+function shorten(addr) {
+  if (!addr) return "—";
+  return addr.slice(0,6)+"..."+addr.slice(-4);
+}
+
+// ─────────────────────────────────────────────────────────
+// BOOT
+// ─────────────────────────────────────────────────────────
+document.addEventListener("DOMContentLoaded", init);
+</script>
+</body>
+</html>
