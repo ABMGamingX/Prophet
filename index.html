@@ -755,8 +755,8 @@ footer{border-top:1px solid var(--border);padding:24px 0;margin-top:16px}
 <script>
 // ── CONFIG ────────────────────────────────────────────────
 const CFG = {
-  CONTRACT: "0xBdEde053cb403365b68Ef3a846CD6B631bC9DF51",
-  OWNER:    "0xBdEde053cb403365b68Ef3a846CD6B631bC9DF51",
+  CONTRACT: "YOUR_CONTRACT_ADDRESS_HERE",
+  OWNER:    "YOUR_WALLET_ADDRESS_HERE",
   CHAIN_ID:  5042002n,
   CHAIN_HEX: "0x4CEF52",
   RPC:       "https://rpc.testnet.arc.network",
@@ -838,7 +838,7 @@ function tick() {
 
 // ── PUBLIC DATA (no wallet required) ─────────────────────
 async function loadPublicData() {
-  if(CFG.CONTRACT === "0xBdEde053cb403365b68Ef3a846CD6B631bC9DF51") {
+  if(CFG.CONTRACT === "YOUR_CONTRACT_ADDRESS_HERE") {
     renderHero("Will BTC close above $95,000 today?", 0, 47, 31);
     renderTodayCard("Will BTC close above $95,000 today?", 0, 47, 31);
     renderYestCard("Will ETH daily fees exceed $5M yesterday?", 0, true, true, 61, 39);
@@ -1037,7 +1037,7 @@ async function connectWallet() {
       userAddress = await signer.getAddress();
     }
 
-    if(CFG.CONTRACT !== "0xBdEde053cb403365b68Ef3a846CD6B631bC9DF51")
+    if(CFG.CONTRACT !== "YOUR_CONTRACT_ADDRESS_HERE")
       contract = new ethers.Contract(CFG.CONTRACT, ABI, signer);
 
     // Header update
@@ -1047,7 +1047,7 @@ async function connectWallet() {
     document.getElementById("wallet-full").textContent   = userAddress;
     document.getElementById("w-avatar").textContent      = userAddress.slice(2,4).toUpperCase();
 
-    if(CFG.OWNER !== "0xBdEde053cb403365b68Ef3a846CD6B631bC9DF51" &&
+    if(CFG.OWNER !== "YOUR_WALLET_ADDRESS_HERE" &&
        userAddress.toLowerCase() === CFG.OWNER.toLowerCase())
       document.getElementById("admin-panel").style.display = "block";
 
