@@ -9,203 +9,85 @@
 <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore-compat.js"></script>
 <style>
-/* ══════════════════════════════════════
-   TOKENS
-══════════════════════════════════════ */
 :root{
-  --bg:#08071a;
-  --bg2:#0f0d28;
-  --card:#110f2a;
-  --card2:#161436;
-  --border:rgba(167,139,250,.12);
-  --bhi:rgba(167,139,250,.35);
-  --purple:#7c3aed;
-  --purpleL:#a78bfa;
-  --purpleX:#c4b5fd;
-  --cyan:#06b6d4;
-  --cyanL:#22d3ee;
-  --green:#10b981;
-  --greenL:#34d399;
-  --red:#ef4444;
-  --redL:#f87171;
-  --amber:#f59e0b;
-  --amberL:#fbbf24;
-  --text:#f1f5f9;
-  --text2:#94a3b8;
-  --text3:#475569;
-  --r:14px;
-  --rL:20px;
-  --appW:430px;
+  --bg:#08071a;--bg2:#0f0d28;--card:#110f2a;--card2:#161436;
+  --border:rgba(167,139,250,.12);--bhi:rgba(167,139,250,.35);
+  --purple:#7c3aed;--purpleL:#a78bfa;--purpleX:#c4b5fd;
+  --cyan:#06b6d4;--cyanL:#22d3ee;
+  --green:#10b981;--greenL:#34d399;
+  --red:#ef4444;--redL:#f87171;
+  --amber:#f59e0b;--amberL:#fbbf24;
+  --text:#f1f5f9;--text2:#94a3b8;--text3:#475569;
+  --r:14px;--rL:20px;--appW:430px;
 }
-
-/* ══════════════════════════════════════
-   RESET
-══════════════════════════════════════ */
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 html,body{height:100%;overscroll-behavior:none}
-body{
-  background:var(--bg);
-  color:var(--text);
-  font-family:'Syne',sans-serif;
-  display:flex;justify-content:center;
-  min-height:100vh;
-  overflow-x:hidden;
-}
-body::before{
-  content:'';position:fixed;inset:0;
-  background:radial-gradient(ellipse 80% 40% at 50% -10%,rgba(124,58,237,.14),transparent);
-  pointer-events:none;z-index:0;
-}
+body{background:var(--bg);color:var(--text);font-family:'Syne',sans-serif;display:flex;justify-content:center;min-height:100vh;overflow-x:hidden}
+body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellipse 80% 40% at 50% -10%,rgba(124,58,237,.14),transparent);pointer-events:none;z-index:0}
 
-/* ══════════════════════════════════════
-   APP SHELL
-══════════════════════════════════════ */
-.app-shell{
-  width:100%;max-width:var(--appW);
-  min-height:100vh;min-height:100dvh;
-  display:flex;flex-direction:column;
-  position:relative;z-index:1;
-  background:var(--bg);
-  border-left:1px solid var(--border);
-  border-right:1px solid var(--border);
-  overflow:hidden;
-}
+/* ── APP SHELL ── */
+.app{width:100%;max-width:var(--appW);min-height:100vh;min-height:100dvh;display:flex;flex-direction:column;position:relative;z-index:1;background:var(--bg);border-left:1px solid var(--border);border-right:1px solid var(--border);overflow:hidden}
 
-/* ══════════════════════════════════════
-   HEADER  — logo + XP only (no chain pill, no address)
-══════════════════════════════════════ */
-.app-header{
-  position:sticky;top:0;z-index:200;
-  display:flex;align-items:center;justify-content:space-between;
-  padding:0 16px;
-  height:56px;
-  background:rgba(8,7,26,.94);
-  backdrop-filter:blur(24px);
-  -webkit-backdrop-filter:blur(24px);
-  border-bottom:1px solid var(--border);
-  gap:10px;
-  flex-shrink:0;
-}
-.hdr-logo{
-  font-family:'Space Mono',monospace;
-  font-size:15px;font-weight:700;letter-spacing:.08em;
-  background:linear-gradient(135deg,var(--purpleX),var(--cyanL));
-  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
-  background-clip:text;flex-shrink:0;
-  white-space:nowrap;
-}
-.hdr-xp{
-  display:none;
-  align-items:center;gap:6px;
-  background:rgba(167,139,250,.1);
-  border:1px solid rgba(167,139,250,.25);
-  border-radius:20px;
-  padding:5px 12px;
-  font-size:11px;font-weight:700;
-  font-family:'Space Mono',monospace;
-  color:var(--purpleL);
-  white-space:nowrap;
-}
-#btn-connect{
-  display:flex;align-items:center;gap:6px;
-  background:linear-gradient(135deg,var(--purple),#5b21b6);
-  border:none;border-radius:20px;
-  padding:7px 16px;
-  font-size:12px;font-weight:700;
-  font-family:'Space Mono',monospace;
-  color:#fff;cursor:pointer;transition:.2s;
-  white-space:nowrap;
-  box-shadow:0 4px 16px rgba(124,58,237,.35);
-  flex-shrink:0;
-}
+/* ── HEADER ── */
+.hdr{position:sticky;top:0;z-index:200;height:56px;display:flex;align-items:center;justify-content:space-between;padding:0 16px;background:rgba(8,7,26,.95);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);border-bottom:1px solid var(--border);gap:8px;flex-shrink:0}
+.hdr-logo{font-family:'Space Mono',monospace;font-size:15px;font-weight:700;letter-spacing:.08em;background:linear-gradient(135deg,var(--purpleX),var(--cyanL));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;flex-shrink:0;white-space:nowrap}
+.hdr-right{display:flex;align-items:center;gap:8px;flex-shrink:0}
+/* XP badge */
+.hdr-xp{display:none;align-items:center;gap:6px;background:rgba(167,139,250,.1);border:1px solid rgba(167,139,250,.25);border-radius:20px;padding:5px 11px;font-size:11px;font-weight:700;font-family:'Space Mono',monospace;color:var(--purpleL);white-space:nowrap}
+
+/* Wallet dropdown */
+#wallet-wrap{position:relative;display:none}
+#wallet-btn{display:flex;align-items:center;gap:7px;background:rgba(16,185,129,.1);border:1px solid rgba(16,185,129,.3);border-radius:20px;padding:5px 12px;font-size:11px;font-weight:700;font-family:'Space Mono',monospace;color:var(--greenL);cursor:pointer;transition:.2s;white-space:nowrap;user-select:none}
+#wallet-btn:hover{background:rgba(16,185,129,.2)}
+.wbtn-dot{width:6px;height:6px;border-radius:50%;background:var(--greenL);flex-shrink:0;box-shadow:0 0 6px var(--greenL)}
+.wbtn-chv{font-size:9px;color:var(--text3);transition:transform .2s}
+#wallet-btn.open .wbtn-chv{transform:rotate(180deg)}
+#wallet-drop{display:none;position:absolute;top:calc(100%+8px);right:0;background:#12102e;border:1px solid var(--bhi);border-radius:var(--r);min-width:220px;z-index:999;box-shadow:0 20px 60px rgba(0,0,0,.8);overflow:hidden}
+#wallet-drop.show{display:block;animation:dropIn .15s ease}
+@keyframes dropIn{from{opacity:0;transform:translateY(-5px)}to{opacity:1;transform:translateY(0)}}
+.drop-hdr{padding:11px 13px;border-bottom:1px solid var(--border)}
+.drop-lbl{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.12em;color:var(--text3);margin-bottom:4px}
+.drop-full{font-size:11px;font-family:'Space Mono',monospace;color:var(--text2);word-break:break-all;line-height:1.5}
+.drop-item{display:flex;align-items:center;gap:10px;padding:11px 13px;font-size:13px;font-weight:600;cursor:pointer;transition:.15s}
+.drop-item:hover{background:rgba(255,255,255,.04)}
+.di-copy{color:var(--text)}.di-disc{color:var(--redL)}
+
+#btn-connect{display:flex;align-items:center;gap:6px;background:linear-gradient(135deg,var(--purple),#5b21b6);border:none;border-radius:20px;padding:7px 15px;font-size:12px;font-weight:700;font-family:'Space Mono',monospace;color:#fff;cursor:pointer;transition:.2s;white-space:nowrap;box-shadow:0 4px 16px rgba(124,58,237,.35);flex-shrink:0}
 #btn-connect:hover{box-shadow:0 6px 24px rgba(124,58,237,.5)}
 #btn-connect:active{transform:scale(.97)}
 
-/* ══════════════════════════════════════
-   SCROLL AREA
-══════════════════════════════════════ */
-.app-content{
-  flex:1;
-  overflow-y:auto;
-  overflow-x:hidden;
-  padding-bottom:80px;
-  -webkit-overflow-scrolling:touch;
-}
-.app-content::-webkit-scrollbar{width:0}
+/* ── SCROLL AREA ── */
+.scroll{flex:1;overflow-y:auto;overflow-x:hidden;padding-bottom:82px;-webkit-overflow-scrolling:touch}
+.scroll::-webkit-scrollbar{width:0}
 
-/* ══════════════════════════════════════
-   PAGES
-══════════════════════════════════════ */
+/* ── PAGES ── */
 .page{display:none;padding:18px 16px}
 .page.active{display:block;animation:pgIn .22s ease}
 @keyframes pgIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
 
-/* ══════════════════════════════════════
-   HERO TITLE
-══════════════════════════════════════ */
-.hero-title{text-align:center;padding:24px 0 20px}
-.hero-name{
-  font-family:'Space Mono',monospace;
-  font-size:clamp(26px,8vw,36px);
-  font-weight:700;letter-spacing:.12em;
-  background:linear-gradient(135deg,var(--purpleX),var(--cyanL));
-  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
-  background-clip:text;line-height:1.1;margin-bottom:6px;
-}
+/* ── HERO TITLE ── */
+.hero-title{text-align:center;padding:22px 0 18px}
+.hero-name{font-family:'Space Mono',monospace;font-size:clamp(24px,8vw,36px);font-weight:700;letter-spacing:.12em;background:linear-gradient(135deg,var(--purpleX),var(--cyanL));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;line-height:1.1;margin-bottom:6px}
 .hero-sub{font-size:10px;font-weight:700;letter-spacing:.18em;color:var(--text3);text-transform:uppercase}
 
-/* ══════════════════════════════════════
-   STATS STRIP
-══════════════════════════════════════ */
-.stats-strip{
-  display:grid;grid-template-columns:repeat(3,1fr);
-  gap:8px;margin-bottom:16px;
-}
-.sc{
-  background:var(--card);border:1px solid var(--border);
-  border-radius:var(--r);padding:14px 8px;text-align:center;
-  transition:border-color .2s;min-width:0;
-}
+/* ── STATS ── */
+.stats-strip{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:14px}
+.sc{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:13px 8px;text-align:center;transition:border-color .2s;min-width:0}
 .sc:hover{border-color:var(--bhi)}
-.sc-val{
-  font-family:'Space Mono',monospace;
-  font-size:clamp(20px,6vw,28px);
-  font-weight:700;line-height:1;margin-bottom:4px;
-}
+.sc-val{font-family:'Space Mono',monospace;font-size:clamp(20px,6vw,28px);font-weight:700;line-height:1;margin-bottom:4px}
 .sc-lbl{font-size:9px;font-weight:700;letter-spacing:.1em;color:var(--text3);text-transform:uppercase}
-.cv-xp{color:var(--purpleL)}.cv-pts{color:var(--amberL)}.cv-str{color:var(--cyanL)}
+.cv-xp{color:var(--purpleL)}.cv-s{color:var(--amberL)}.cv-a{color:var(--cyanL)}
 
-/* ══════════════════════════════════════
-   DAILY CARD
-══════════════════════════════════════ */
-.daily-card{
-  background:var(--card2);border:1px solid var(--bhi);
-  border-radius:var(--rL);padding:18px;margin-bottom:14px;
-  position:relative;overflow:hidden;
-}
-.daily-card::before{
-  content:'';position:absolute;top:-40px;right:-40px;
-  width:100px;height:100px;
-  background:radial-gradient(circle,rgba(124,58,237,.18),transparent 70%);
-  pointer-events:none;
-}
-.dc-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+/* ── DAILY CARD ── */
+.daily-card{background:var(--card2);border:1px solid var(--bhi);border-radius:var(--rL);padding:18px;margin-bottom:14px;position:relative;overflow:hidden}
+.daily-card::before{content:'';position:absolute;top:-40px;right:-40px;width:100px;height:100px;background:radial-gradient(circle,rgba(124,58,237,.18),transparent 70%);pointer-events:none}
+.dc-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
 .dc-label{font-size:9px;font-weight:700;letter-spacing:.14em;color:var(--text3);text-transform:uppercase}
-.dc-live{
-  display:flex;align-items:center;gap:5px;
-  background:rgba(16,185,129,.12);border:1px solid rgba(16,185,129,.3);
-  border-radius:20px;padding:3px 10px;
-  font-size:9px;font-weight:700;font-family:'Space Mono',monospace;
-  color:var(--greenL);letter-spacing:.06em;
-}
+.dc-live{display:flex;align-items:center;gap:5px;background:rgba(16,185,129,.12);border:1px solid rgba(16,185,129,.3);border-radius:20px;padding:3px 10px;font-size:9px;font-weight:700;font-family:'Space Mono',monospace;color:var(--greenL);letter-spacing:.06em}
 .dc-live-dot{width:5px;height:5px;border-radius:50%;background:var(--greenL);animation:blink 1.4s infinite}
-@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.25}}
 
-.dc-cat{margin-bottom:10px}
-.cat-pill{
-  display:inline-block;padding:3px 10px;border-radius:20px;
-  font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;
-}
+.cat-pill{display:inline-block;padding:3px 10px;border-radius:20px;font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;margin-bottom:10px}
 .cp-crypto{background:rgba(167,139,250,.15);color:var(--purpleL);border:1px solid rgba(167,139,250,.3)}
 .cp-macro{background:rgba(6,182,212,.12);color:var(--cyanL);border:1px solid rgba(6,182,212,.25)}
 .cp-world{background:rgba(16,185,129,.12);color:var(--greenL);border:1px solid rgba(16,185,129,.25)}
@@ -213,23 +95,15 @@ body::before{
 
 .dc-question{font-size:clamp(14px,4vw,17px);font-weight:700;line-height:1.5;margin-bottom:14px;min-height:44px}
 
-/* bar */
-.dcb-hdr{display:flex;justify-content:space-between;font-size:10px;color:var(--text3);margin-bottom:7px;font-weight:600}
-.dcb-track{height:8px;background:rgba(239,68,68,.18);border-radius:5px;overflow:hidden}
-.dcb-fill{height:100%;background:linear-gradient(90deg,var(--green),var(--greenL));border-radius:5px;transition:width .6s ease}
-.dcb-counts{display:flex;justify-content:space-between;margin-top:7px;font-size:12px;font-weight:700}
-.dcb-yes{color:var(--greenL)}.dcb-no{color:var(--redL)}
-.dcb-tot{font-size:10px;color:var(--text3);font-weight:600;text-align:center}
+.bar-hdr{display:flex;justify-content:space-between;font-size:10px;color:var(--text3);margin-bottom:7px;font-weight:600}
+.bar-track{height:8px;background:rgba(239,68,68,.18);border-radius:5px;overflow:hidden}
+.bar-fill{height:100%;background:linear-gradient(90deg,var(--green),var(--greenL));border-radius:5px;transition:width .6s ease}
+.bar-counts{display:flex;justify-content:space-between;margin-top:7px;font-size:12px;font-weight:700}
+.by{color:var(--greenL)}.bn{color:var(--redL)}.bt{font-size:10px;color:var(--text3);font-weight:600;text-align:center}
 
 /* vote buttons */
 .vote-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px;width:100%}
-.btn-yes,.btn-no{
-  padding:14px 8px;border:none;border-radius:var(--r);
-  font-size:clamp(13px,3.5vw,15px);font-weight:800;font-family:'Syne',sans-serif;
-  cursor:pointer;transition:all .18s;
-  display:flex;align-items:center;justify-content:center;gap:6px;
-  width:100%;min-width:0;
-}
+.btn-yes,.btn-no{padding:14px 8px;border:none;border-radius:var(--r);font-size:clamp(13px,3.5vw,15px);font-weight:800;font-family:'Syne',sans-serif;cursor:pointer;transition:all .18s;display:flex;align-items:center;justify-content:center;gap:6px;width:100%;min-width:0}
 .btn-yes{background:linear-gradient(135deg,#059669,var(--green));color:#fff;box-shadow:0 4px 18px rgba(5,150,105,.3)}
 .btn-yes:hover:not(:disabled){transform:translateY(-1px);box-shadow:0 6px 24px rgba(5,150,105,.45)}
 .btn-no{background:linear-gradient(135deg,#b91c1c,var(--red));color:#fff;box-shadow:0 4px 18px rgba(185,28,28,.3)}
@@ -238,25 +112,17 @@ body::before{
 .btn-yes:active:not(:disabled),.btn-no:active:not(:disabled){transform:scale(.96)}
 
 /* connect nudge */
-.connect-nudge{
-  background:rgba(124,58,237,.07);border:1px dashed rgba(124,58,237,.3);
-  border-radius:var(--r);padding:16px;text-align:center;cursor:pointer;transition:.2s;
-}
-.connect-nudge:hover{background:rgba(124,58,237,.14);border-color:var(--bhi)}
-.cn-icon{font-size:24px;margin-bottom:6px}
-.cn-title{font-size:13px;font-weight:700;color:var(--purpleL);margin-bottom:3px}
-.cn-sub{font-size:11px;color:var(--text3)}
+.nudge{background:rgba(124,58,237,.07);border:1px dashed rgba(124,58,237,.3);border-radius:var(--r);padding:16px;text-align:center;cursor:pointer;transition:.2s}
+.nudge:hover{background:rgba(124,58,237,.14);border-color:var(--bhi)}
+.nudge-ico{font-size:24px;margin-bottom:6px}
+.nudge-title{font-size:13px;font-weight:700;color:var(--purpleL);margin-bottom:3px}
+.nudge-sub{font-size:11px;color:var(--text3)}
 
 /* gas */
-.dc-gas{
-  display:flex;align-items:center;justify-content:space-between;
-  background:rgba(6,182,212,.05);border:1px solid rgba(6,182,212,.12);
-  border-radius:10px;padding:8px 12px;
-  font-size:10px;color:var(--text3);font-weight:600;
-}
-.dc-gas .gv{color:var(--cyanL);font-weight:700;font-family:'Space Mono',monospace}
+.gas-row{display:flex;align-items:center;justify-content:space-between;background:rgba(6,182,212,.05);border:1px solid rgba(6,182,212,.12);border-radius:10px;padding:8px 12px;font-size:10px;color:var(--text3);font-weight:600}
+.gas-row .gv{color:var(--cyanL);font-weight:700;font-family:'Space Mono',monospace}
 
-/* voted state */
+/* voted */
 .voted-box{border-radius:var(--r);padding:14px;text-align:center;margin-bottom:10px}
 .vb-yes{background:rgba(16,185,129,.08);border:1.5px solid rgba(16,185,129,.3)}
 .vb-no{background:rgba(239,68,68,.08);border:1.5px solid rgba(239,68,68,.3)}
@@ -264,199 +130,100 @@ body::before{
 .vb-ans{font-size:20px;font-weight:800}
 .vb-sub{font-size:11px;color:var(--text3);margin-top:4px}
 
-/* claim button */
-.btn-claim{
-  width:100%;padding:13px;
-  background:linear-gradient(135deg,rgba(245,158,11,.2),rgba(245,158,11,.1));
-  border:1.5px solid rgba(245,158,11,.45);border-radius:var(--r);
-  color:var(--amberL);font-size:12px;font-weight:800;
-  font-family:'Syne',sans-serif;cursor:pointer;transition:.2s;
-  letter-spacing:.04em;text-transform:uppercase;
-}
+/* claim */
+.btn-claim{width:100%;padding:13px;background:linear-gradient(135deg,rgba(245,158,11,.2),rgba(245,158,11,.1));border:1.5px solid rgba(245,158,11,.45);border-radius:var(--r);color:var(--amberL);font-size:12px;font-weight:800;font-family:'Syne',sans-serif;cursor:pointer;transition:.2s;letter-spacing:.04em;text-transform:uppercase}
 .btn-claim:hover{background:linear-gradient(135deg,rgba(245,158,11,.35),rgba(245,158,11,.2))}
 
-/* tx strip */
-.tx-strip{
-  display:none;border-radius:var(--r);padding:10px 12px;margin-top:10px;
-  font-size:11px;font-weight:600;word-break:break-all;
-}
-.tx-strip.pending{background:rgba(245,158,11,.08);border:1px solid rgba(245,158,11,.25);color:var(--amberL)}
-.tx-strip.success{background:rgba(16,185,129,.08);border:1px solid rgba(16,185,129,.25);color:var(--greenL)}
-.tx-strip.error{background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.25);color:var(--redL)}
+/* tx */
+.tx-box{display:none;border-radius:var(--r);padding:10px 12px;margin-top:10px;font-size:11px;font-weight:600;word-break:break-all}
+.tx-box.pending{background:rgba(245,158,11,.08);border:1px solid rgba(245,158,11,.25);color:var(--amberL)}
+.tx-box.success{background:rgba(16,185,129,.08);border:1px solid rgba(16,185,129,.25);color:var(--greenL)}
+.tx-box.error{background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.25);color:var(--redL)}
 .tx-link{font-family:'Space Mono',monospace;font-size:10px;color:var(--cyanL);text-decoration:none;display:block;margin-top:4px}
 .tx-link:hover{text-decoration:underline}
 
-/* card footer */
-.dc-footer{
-  display:flex;align-items:center;justify-content:space-between;
-  margin-top:12px;padding-top:12px;border-top:1px solid var(--border);
-  font-size:10px;color:var(--text3);font-weight:600;flex-wrap:wrap;gap:4px;
-}
-.cdwn-val{color:var(--amberL);font-family:'Space Mono',monospace;font-weight:700}
+.dc-footer{display:flex;align-items:center;justify-content:space-between;margin-top:12px;padding-top:12px;border-top:1px solid var(--border);font-size:10px;color:var(--text3);font-weight:600;flex-wrap:wrap;gap:4px}
+.cdwn{color:var(--amberL);font-family:'Space Mono',monospace;font-weight:700}
 
 /* arc pills */
 .arc-pill-row{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px}
-.arc-pill{
-  display:flex;align-items:center;gap:5px;
-  background:rgba(124,58,237,.08);border:1px solid rgba(124,58,237,.2);
-  border-radius:20px;padding:5px 11px;
-  font-size:10px;font-weight:700;color:var(--purpleL);
-}
-.arc-pill-dot{width:5px;height:5px;border-radius:50%;background:var(--cyanL);flex-shrink:0}
+.arc-pill{display:flex;align-items:center;gap:5px;background:rgba(124,58,237,.08);border:1px solid rgba(124,58,237,.2);border-radius:20px;padding:5px 11px;font-size:10px;font-weight:700;color:var(--purpleL)}
+.apd{width:5px;height:5px;border-radius:50%;background:var(--cyanL);flex-shrink:0}
 
-/* ══════════════════════════════════════
-   SECTION HEADER
-══════════════════════════════════════ */
-.section-hdr{
-  font-size:9px;font-weight:700;letter-spacing:.16em;
-  color:var(--text3);text-transform:uppercase;
-  margin-bottom:12px;margin-top:6px;
-}
+/* section hdr */
+.sh{font-size:9px;font-weight:700;letter-spacing:.16em;color:var(--text3);text-transform:uppercase;margin-bottom:12px;margin-top:6px}
 
-/* ══════════════════════════════════════
-   HOW IT WORKS  (hidden after connect)
-══════════════════════════════════════ */
-#how-it-works{transition:opacity .3s}
+/* how it works */
+#how-section{transition:opacity .3s}
 .how-list{display:flex;flex-direction:column;gap:8px;margin-bottom:14px}
-.how-item{
-  display:flex;align-items:flex-start;gap:12px;
-  background:var(--card);border:1px solid var(--border);
-  border-radius:var(--r);padding:14px;
-}
-.hi-icon{
-  width:38px;height:38px;border-radius:12px;
-  display:flex;align-items:center;justify-content:center;
-  font-size:18px;flex-shrink:0;background:rgba(124,58,237,.15);
-}
-.hi-title{font-size:13px;font-weight:700;margin-bottom:3px}
-.hi-desc{font-size:11px;color:var(--text3);line-height:1.55}
-
-.btn-view-all{
-  width:100%;padding:15px;
-  background:var(--card);border:1px solid var(--border);
-  border-radius:var(--r);font-size:11px;font-weight:800;
-  font-family:'Syne',sans-serif;color:var(--text2);
-  cursor:pointer;transition:.2s;letter-spacing:.1em;
-  text-transform:uppercase;margin-bottom:18px;
-}
+.how-item{display:flex;align-items:flex-start;gap:12px;background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:14px}
+.hi-ico{width:38px;height:38px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;background:rgba(124,58,237,.15)}
+.hi-t{font-size:13px;font-weight:700;margin-bottom:3px}
+.hi-d{font-size:11px;color:var(--text3);line-height:1.55}
+.btn-view-all{width:100%;padding:15px;background:var(--card);border:1px solid var(--border);border-radius:var(--r);font-size:11px;font-weight:800;font-family:'Syne',sans-serif;color:var(--text2);cursor:pointer;transition:.2s;letter-spacing:.1em;text-transform:uppercase;margin-bottom:18px}
 .btn-view-all:hover{border-color:var(--bhi);color:var(--purpleL);background:rgba(124,58,237,.07)}
 
-/* ══════════════════════════════════════
-   LEADERBOARD
-══════════════════════════════════════ */
-.lb-card{
-  background:var(--card);border:1px solid var(--border);
-  border-radius:var(--rL);overflow:hidden;
-}
-.lb-card-head{
-  display:flex;justify-content:space-between;align-items:center;
-  padding:13px 16px;border-bottom:1px solid var(--border);
-}
-.lb-card-title{font-size:11px;font-weight:700;letter-spacing:.06em}
-.lb-row{
-  display:flex;align-items:center;gap:10px;padding:12px 14px;
-  border-bottom:1px solid var(--border);transition:.15s;
-}
+/* leaderboard */
+.lb-card{background:var(--card);border:1px solid var(--border);border-radius:var(--rL);overflow:hidden}
+.lb-head{display:flex;justify-content:space-between;align-items:center;padding:13px 16px;border-bottom:1px solid var(--border)}
+.lb-head-t{font-size:11px;font-weight:700}
+.lb-row{display:flex;align-items:center;gap:10px;padding:12px 14px;border-bottom:1px solid var(--border);transition:.15s}
 .lb-row:last-child{border-bottom:none}
 .lb-row:hover{background:rgba(255,255,255,.02)}
 .lb-row.me{background:rgba(124,58,237,.06)}
-.lb-pos-badge{
-  width:26px;height:26px;border-radius:8px;
-  display:flex;align-items:center;justify-content:center;
-  font-size:10px;font-weight:800;font-family:'Space Mono',monospace;flex-shrink:0;
-}
-.pos-1{background:rgba(251,191,36,.2);color:var(--amberL)}
-.pos-2{background:rgba(148,163,184,.15);color:#94a3b8}
-.pos-3{background:rgba(205,124,58,.15);color:#cd7c3a}
-.pos-n{background:rgba(124,58,237,.1);color:var(--text3)}
+.lb-pos{width:26px;height:26px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:800;font-family:'Space Mono',monospace;flex-shrink:0}
+.p1{background:rgba(251,191,36,.2);color:var(--amberL)}.p2{background:rgba(148,163,184,.15);color:#94a3b8}.p3{background:rgba(205,124,58,.15);color:#cd7c3a}.pn{background:rgba(124,58,237,.1);color:var(--text3)}
 .lb-info{flex:1;min-width:0}
 .lb-name{font-size:12px;font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.lb-meta{font-size:10px;color:var(--text3);margin-top:1px}
+/* REMOVED: .lb-sub — no rank shown under leaderboard names */
 .lb-right{text-align:right;flex-shrink:0}
-.lb-xp-val{font-size:13px;font-weight:800;font-family:'Space Mono',monospace;color:var(--purpleL)}
-.lb-xp-lbl{font-size:9px;color:var(--text3);font-weight:600;text-transform:uppercase;letter-spacing:.06em;margin-top:2px}
-.lb-footer{
-  display:flex;align-items:center;justify-content:space-between;
-  padding:11px 14px;background:rgba(124,58,237,.06);
-  border-top:1px solid rgba(124,58,237,.18);
-}
-.lb-footer-lbl{font-size:10px;color:var(--text3);font-weight:700;text-transform:uppercase;letter-spacing:.1em}
-.lb-footer-pos{font-size:12px;font-weight:700;color:var(--purpleL);display:flex;align-items:center;gap:5px}
+.lb-xp{font-size:13px;font-weight:800;font-family:'Space Mono',monospace;color:var(--purpleL)}
+.lb-xp-lbl{font-size:9px;color:var(--text3);font-weight:600;text-transform:uppercase;margin-top:1px}
+.lb-foot{display:flex;align-items:center;justify-content:space-between;padding:11px 14px;background:rgba(124,58,237,.06);border-top:1px solid rgba(124,58,237,.18)}
+.lb-foot-lbl{font-size:10px;color:var(--text3);font-weight:700;text-transform:uppercase;letter-spacing:.1em}
+.lb-foot-pos{font-size:12px;font-weight:700;color:var(--purpleL)}
 
-/* ══════════════════════════════════════
-   MARKETS PAGE
-══════════════════════════════════════ */
-.page-title{
-  font-family:'Space Mono',monospace;
-  font-size:clamp(18px,5vw,22px);font-weight:700;
-  background:linear-gradient(135deg,var(--purpleX),var(--cyanL));
-  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
-  background-clip:text;letter-spacing:.08em;
-  margin-bottom:4px;
-}
+/* ── MARKETS PAGE ── */
+.page-title{font-family:'Space Mono',monospace;font-size:clamp(18px,5vw,22px);font-weight:700;background:linear-gradient(135deg,var(--purpleX),var(--cyanL));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;letter-spacing:.08em;margin-bottom:4px}
 .page-sub{font-size:10px;color:var(--text3);font-weight:600;letter-spacing:.1em;text-transform:uppercase;margin-bottom:18px}
 
-.mkt-card{
-  background:var(--card);border:1px solid var(--border);
-  border-radius:var(--rL);padding:18px;margin-bottom:12px;
-  transition:.2s;position:relative;overflow:hidden;
-}
-.mkt-card::before{
-  content:'';position:absolute;top:0;left:0;right:0;height:2px;
-  background:linear-gradient(90deg,var(--purple),var(--cyan));
-  opacity:0;transition:.3s;
-}
+.mkt-card{background:var(--card);border:1px solid var(--border);border-radius:var(--rL);padding:18px;margin-bottom:12px;transition:.2s;position:relative;overflow:hidden}
+.mkt-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--purple),var(--cyan));opacity:0;transition:.3s}
 .mkt-card:hover::before{opacity:1}
 .mkt-card:hover{border-color:var(--bhi)}
-.mkt-card.resolved{opacity:.82}
-
+.mkt-card.res{opacity:.82}
 .mc-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;flex-wrap:wrap;gap:6px}
-.mc-resolved-badge{
-  font-size:9px;font-weight:700;
-  background:rgba(71,85,105,.12);border:1px solid rgba(71,85,105,.25);
-  color:var(--text3);padding:3px 10px;border-radius:20px;letter-spacing:.08em;text-transform:uppercase;
-}
-.mc-question{font-size:clamp(13px,3.8vw,15px);font-weight:700;line-height:1.5;margin-bottom:12px}
+.res-badge{font-size:9px;font-weight:700;background:rgba(71,85,105,.12);border:1px solid rgba(71,85,105,.25);color:var(--text3);padding:3px 10px;border-radius:20px;letter-spacing:.08em;text-transform:uppercase}
+.mc-q{font-size:clamp(13px,3.8vw,15px);font-weight:700;line-height:1.5;margin-bottom:12px}
 
 .mc-bar-hdr{display:flex;justify-content:space-between;font-size:10px;color:var(--text3);margin-bottom:6px;font-weight:600}
-.mc-bar-track{height:6px;background:rgba(239,68,68,.18);border-radius:4px;overflow:hidden}
-.mc-bar-fill{height:100%;border-radius:4px;transition:width .6s ease}
-.mbf-yes{background:linear-gradient(90deg,var(--green),var(--greenL))}
-.mc-counts{display:flex;justify-content:space-between;margin-top:6px;font-size:11px;font-weight:700}
-.mcc-y{color:var(--greenL)}.mcc-n{color:var(--redL)}.mcc-t{font-size:10px;color:var(--text3);font-weight:600}
+.mc-track{height:6px;background:rgba(239,68,68,.18);border-radius:4px;overflow:hidden}
+.mc-fill{height:100%;border-radius:4px;transition:width .6s ease}
+.mfy{background:linear-gradient(90deg,var(--green),var(--greenL))}
+.mc-cnts{display:flex;justify-content:space-between;margin-top:6px;font-size:11px;font-weight:700}
+.mcy{color:var(--greenL)}.mcn{color:var(--redL)}.mct{font-size:10px;color:var(--text3);font-weight:600}
 
-.mc-vote-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;width:100%}
-.mc-btn-y,.mc-btn-n{
-  padding:11px 6px;border-radius:var(--r);
-  font-size:clamp(12px,3.5vw,13px);font-weight:800;
-  font-family:'Syne',sans-serif;cursor:pointer;transition:.18s;
-  display:flex;align-items:center;justify-content:center;gap:5px;
-  width:100%;min-width:0;
-}
-.mc-btn-y{background:rgba(16,185,129,.12);border:1.5px solid var(--green);color:var(--greenL)}
-.mc-btn-y:hover:not(:disabled){background:rgba(16,185,129,.25);transform:translateY(-1px)}
-.mc-btn-n{background:rgba(239,68,68,.12);border:1.5px solid var(--red);color:var(--redL)}
-.mc-btn-n:hover:not(:disabled){background:rgba(239,68,68,.25);transform:translateY(-1px)}
-.mc-btn-y:disabled,.mc-btn-n:disabled{opacity:.35;cursor:not-allowed}
+.mc-vote-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;width:100%;margin-top:12px}
+.mc-by,.mc-bn{padding:11px 6px;border-radius:var(--r);font-size:clamp(12px,3.5vw,13px);font-weight:800;font-family:'Syne',sans-serif;cursor:pointer;transition:.18s;display:flex;align-items:center;justify-content:center;gap:5px;width:100%;min-width:0}
+.mc-by{background:rgba(16,185,129,.12);border:1.5px solid var(--green);color:var(--greenL)}
+.mc-by:hover:not(:disabled){background:rgba(16,185,129,.25);transform:translateY(-1px)}
+.mc-bn{background:rgba(239,68,68,.12);border:1.5px solid var(--red);color:var(--redL)}
+.mc-bn:hover:not(:disabled){background:rgba(239,68,68,.25);transform:translateY(-1px)}
+.mc-by:disabled,.mc-bn:disabled{opacity:.35;cursor:not-allowed}
 
-.mc-voted{border-radius:var(--r);padding:11px 14px;display:flex;align-items:center;justify-content:space-between}
-.mcv-yes{background:rgba(16,185,129,.08);border:1.5px solid rgba(16,185,129,.25)}
-.mcv-no{background:rgba(239,68,68,.08);border:1.5px solid rgba(239,68,68,.25)}
+.mc-voted{border-radius:var(--r);padding:11px 14px;display:flex;align-items:center;justify-content:space-between;margin-top:12px}
+.mcvy{background:rgba(16,185,129,.08);border:1.5px solid rgba(16,185,129,.25)}
+.mcvn{background:rgba(239,68,68,.08);border:1.5px solid rgba(239,68,68,.25)}
 .mcv-ans{font-size:17px;font-weight:800}
 .mcv-lbl{font-size:10px;color:var(--text3);font-weight:700;text-transform:uppercase;letter-spacing:.1em;margin-bottom:2px}
 
-.mc-result{border-radius:var(--r);padding:12px 14px;text-align:center;margin-bottom:8px}
-.mr-yes{background:rgba(16,185,129,.08);border:1px solid rgba(16,185,129,.25)}
-.mr-no{background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.25)}
-.mr-h{font-size:13px;font-weight:800;margin-bottom:3px}
-.mr-sub{font-size:11px;color:var(--text3)}
+.mc-result{border-radius:var(--r);padding:12px 14px;text-align:center;margin-top:10px}
+.mryes{background:rgba(16,185,129,.08);border:1px solid rgba(16,185,129,.25)}
+.mrno{background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.25)}
+.mrh{font-size:13px;font-weight:800;margin-bottom:3px}
+.mrsub{font-size:11px;color:var(--text3)}
 
-.mc-gas{
-  display:flex;justify-content:space-between;align-items:center;
-  padding:8px 12px;background:rgba(6,182,212,.05);
-  border:1px solid rgba(6,182,212,.12);border-radius:10px;
-  font-size:10px;color:var(--text3);font-weight:600;margin-top:10px;
-}
+.mc-gas{display:flex;justify-content:space-between;align-items:center;padding:8px 12px;background:rgba(6,182,212,.05);border:1px solid rgba(6,182,212,.12);border-radius:10px;font-size:10px;color:var(--text3);font-weight:600;margin-top:10px}
 .mc-gas .gv{color:var(--cyanL);font-family:'Space Mono',monospace;font-weight:700}
 
 .mc-tx{display:none;margin-top:10px;padding:10px 12px;border-radius:10px;font-size:11px;font-weight:600;word-break:break-all}
@@ -467,28 +234,16 @@ body::before{
 
 .mc-footer{display:flex;justify-content:space-between;font-size:10px;color:var(--text3);font-weight:600;margin-top:12px;padding-top:10px;border-top:1px solid var(--border)}
 
-/* ══════════════════════════════════════
-   PROFILE PAGE
-══════════════════════════════════════ */
-.profile-hero{text-align:center;padding:24px 0 18px}
-.profile-avatar{
-  width:76px;height:76px;border-radius:50%;
-  background:linear-gradient(135deg,var(--purple),var(--cyan));
-  display:flex;align-items:center;justify-content:center;
-  font-size:30px;margin:0 auto 12px;
-  box-shadow:0 0 36px rgba(124,58,237,.4);
-  border:3px solid rgba(167,139,250,.3);
-}
-.profile-addr{
-  font-size:13px;font-family:'Space Mono',monospace;
-  color:var(--text2);margin-bottom:0; /* no rank badge below - REMOVED */
-}
+/* ── PROFILE PAGE ── */
+.prof-hero{text-align:center;padding:24px 0 18px}
+.prof-avatar{width:76px;height:76px;border-radius:50%;background:linear-gradient(135deg,var(--purple),var(--cyan));display:flex;align-items:center;justify-content:center;font-size:30px;margin:0 auto 12px;box-shadow:0 0 36px rgba(124,58,237,.4);border:3px solid rgba(167,139,250,.3)}
+.prof-addr{font-size:13px;font-family:'Space Mono',monospace;color:var(--text2)}
+/* NO rank badge, NO rank progress card */
 
-/* profile stats grid */
-.profile-stats{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px}
-.ps-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:16px;text-align:center}
-.psc-val{font-size:clamp(20px,6vw,24px);font-weight:800;font-family:'Space Mono',monospace;margin-bottom:4px;line-height:1}
-.psc-lbl{font-size:10px;color:var(--text3);font-weight:700;text-transform:uppercase;letter-spacing:.08em}
+.prof-stats{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px}
+.ps-c{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:16px;text-align:center}
+.ps-val{font-size:clamp(20px,6vw,24px);font-weight:800;font-family:'Space Mono',monospace;margin-bottom:4px;line-height:1}
+.ps-lbl{font-size:10px;color:var(--text3);font-weight:700;text-transform:uppercase;letter-spacing:.08em}
 
 /* history */
 .hist-wrap{background:var(--card);border:1px solid var(--border);border-radius:var(--rL);overflow:hidden;margin-bottom:14px}
@@ -496,441 +251,314 @@ body::before{
 .hist-row{display:flex;align-items:center;gap:8px;padding:11px 14px;border-bottom:1px solid var(--border);font-size:12px;transition:.15s;flex-wrap:wrap}
 .hist-row:last-child{border-bottom:none}
 .hist-row:hover{background:rgba(255,255,255,.02)}
-.hr-day{font-family:'Space Mono',monospace;color:var(--text3);font-size:10px;min-width:40px}
-.hr-ans{padding:3px 10px;border-radius:20px;font-size:10px;font-weight:700;white-space:nowrap}
+.hr-day{font-family:'Space Mono',monospace;color:var(--text3);font-size:10px;min-width:40px;flex-shrink:0}
+.hr-q{font-size:11px;color:var(--text2);flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.hr-ans{padding:3px 9px;border-radius:20px;font-size:10px;font-weight:700;white-space:nowrap;flex-shrink:0}
 .ha-yes{background:rgba(16,185,129,.15);color:var(--greenL);border:1px solid rgba(16,185,129,.3)}
 .ha-no{background:rgba(239,68,68,.15);color:var(--redL);border:1px solid rgba(239,68,68,.3)}
-.hr-result{font-weight:700;font-size:11px}
-.hr-ok{color:var(--greenL)}.hr-ng{color:var(--redL)}.hr-p{color:var(--text3)}
-.hr-link{margin-left:auto;font-size:10px;color:var(--cyanL);text-decoration:none;font-family:'Space Mono',monospace;white-space:nowrap}
+.hr-res{font-weight:700;font-size:11px;flex-shrink:0}
+.hrok{color:var(--greenL)}.hrng{color:var(--redL)}.hrp{color:var(--text3)}
+.hr-link{font-size:10px;color:var(--cyanL);text-decoration:none;font-family:'Space Mono',monospace;white-space:nowrap;flex-shrink:0}
 .hr-link:hover{text-decoration:underline}
 
-/* arc info grid */
+/* arc info */
 .arc-info{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px}
-.ai-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:14px}
+.ai-c{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:14px}
 .ai-ico{font-size:20px;margin-bottom:8px;display:block}
-.ai-title{font-size:12px;font-weight:700;margin-bottom:3px}
-.ai-desc{font-size:10px;color:var(--text3);line-height:1.5}
-.ai-val{font-size:11px;font-weight:800;color:var(--cyanL);margin-top:6px}
+.ai-t{font-size:12px;font-weight:700;margin-bottom:3px}
+.ai-d{font-size:10px;color:var(--text3);line-height:1.5}
+.ai-v{font-size:11px;font-weight:800;color:var(--cyanL);margin-top:6px}
 
-.btn-disconnect{
-  width:100%;padding:14px;
-  background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.25);
-  border-radius:var(--r);color:var(--redL);
-  font-size:12px;font-weight:800;font-family:'Syne',sans-serif;
-  cursor:pointer;transition:.2s;letter-spacing:.06em;text-transform:uppercase;margin-bottom:14px;
-}
-.btn-disconnect:hover{background:rgba(239,68,68,.16);border-color:rgba(239,68,68,.5)}
-
-/* ══════════════════════════════════════
-   ADMIN PANEL
-══════════════════════════════════════ */
-.admin-panel{
-  display:none;
-  background:rgba(245,158,11,.04);border:1px solid rgba(245,158,11,.2);
-  border-radius:var(--rL);padding:16px;margin-bottom:14px;
-}
+/* ── ADMIN PANEL ── */
+.admin-panel{display:none;background:rgba(245,158,11,.04);border:1px solid rgba(245,158,11,.2);border-radius:var(--rL);padding:16px;margin-bottom:14px}
 .admin-hdr{display:flex;align-items:center;gap:8px;margin-bottom:12px}
-.admin-title{font-size:11px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--amberL)}
-.admin-badge{font-size:9px;background:rgba(245,158,11,.15);border:1px solid rgba(245,158,11,.3);color:var(--amberL);padding:2px 8px;border-radius:20px;font-weight:700;letter-spacing:.06em;text-transform:uppercase}
+.admin-t{font-size:11px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--amberL)}
+.admin-b{font-size:9px;background:rgba(245,158,11,.15);border:1px solid rgba(245,158,11,.3);color:var(--amberL);padding:2px 8px;border-radius:20px;font-weight:700;letter-spacing:.06em;text-transform:uppercase}
 .admin-lbl{font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--text3);margin-bottom:8px}
-.a-inp{
-  width:100%;background:rgba(255,255,255,.04);
-  border:1px solid var(--border);border-radius:var(--r);
-  padding:10px 12px;color:var(--text);font-size:13px;
-  font-family:'Syne',sans-serif;outline:none;margin-bottom:8px;transition:.2s;
-}
+.a-inp{width:100%;background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:var(--r);padding:10px 12px;color:var(--text);font-size:13px;font-family:'Syne',sans-serif;outline:none;margin-bottom:8px;transition:.2s}
 .a-inp:focus{border-color:rgba(245,158,11,.4)}
 .a-inp::placeholder{color:var(--text3)}
 .a-row{display:flex;gap:8px;margin-bottom:8px;flex-wrap:wrap}
-.a-sel{
-  background:#0d0c22;border:1px solid var(--border);border-radius:var(--r);
-  padding:10px 12px;color:var(--text);font-size:12px;
-  font-family:'Syne',sans-serif;cursor:pointer;outline:none;
-}
-.btn-admin{
-  flex:1;min-width:0;
-  background:rgba(245,158,11,.15);border:1px solid rgba(245,158,11,.35);
-  color:var(--amberL);padding:10px 12px;border-radius:var(--r);
-  font-size:12px;font-weight:700;font-family:'Syne',sans-serif;
-  cursor:pointer;transition:.2s;white-space:nowrap;
-}
+.a-sel{background:#0d0c22;border:1px solid var(--border);border-radius:var(--r);padding:10px 12px;color:var(--text);font-size:12px;font-family:'Syne',sans-serif;cursor:pointer;outline:none}
+.btn-admin{flex:1;min-width:0;background:rgba(245,158,11,.15);border:1px solid rgba(245,158,11,.35);color:var(--amberL);padding:10px 12px;border-radius:var(--r);font-size:12px;font-weight:700;font-family:'Syne',sans-serif;cursor:pointer;transition:.2s;white-space:nowrap}
 .btn-admin:hover{background:rgba(245,158,11,.28)}
 .q-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:12px}
-.q-preset{
-  background:rgba(255,255,255,.03);border:1px solid var(--border);
-  border-radius:var(--r);padding:8px 10px;font-size:11px;color:var(--text3);
-  cursor:pointer;transition:.2s;text-align:left;font-family:'Syne',sans-serif;line-height:1.4;
-}
-.q-preset:hover{border-color:rgba(245,158,11,.4);color:var(--amberL)}
-.admin-div{height:1px;background:var(--border);margin:12px 0}
+.q-pre{background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:var(--r);padding:8px 10px;font-size:11px;color:var(--text3);cursor:pointer;transition:.2s;text-align:left;font-family:'Syne',sans-serif;line-height:1.4}
+.q-pre:hover{border-color:rgba(245,158,11,.4);color:var(--amberL)}
+.a-div{height:1px;background:var(--border);margin:12px 0}
 
-/* ══════════════════════════════════════
-   BOTTOM NAV
-══════════════════════════════════════ */
-.bottom-nav{
-  position:fixed;
-  bottom:0;left:50%;transform:translateX(-50%);
-  width:100%;max-width:var(--appW);
-  background:rgba(8,7,26,.97);
-  backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);
-  border-top:1px solid var(--border);
-  display:flex;z-index:200;
-  padding-bottom:env(safe-area-inset-bottom);
-  padding-bottom:constant(safe-area-inset-bottom);
-}
-.nav-tab{
-  flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;
-  padding:10px 6px;cursor:pointer;gap:4px;border:none;background:none;
-  font-family:'Syne',sans-serif;transition:.2s;position:relative;
-}
-.nav-tab:hover{background:rgba(255,255,255,.03)}
-.nav-icon{font-size:20px;line-height:1;transition:transform .2s}
-.nav-label{font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--text3);transition:.2s}
-.nav-tab.active .nav-icon{transform:scale(1.12)}
-.nav-tab.active .nav-label{color:var(--purpleL)}
-.nav-tab.active::after{
-  content:'';position:absolute;bottom:0;
-  width:28px;height:2px;
-  background:linear-gradient(90deg,var(--purple),var(--cyanL));
-  border-radius:2px 2px 0 0;
-}
+/* daily question auto info */
+.auto-q-notice{background:rgba(6,182,212,.06);border:1px solid rgba(6,182,212,.2);border-radius:var(--r);padding:10px 14px;font-size:11px;color:var(--cyanL);margin-bottom:12px;font-weight:600}
 
-/* ══════════════════════════════════════
-   TOAST
-══════════════════════════════════════ */
-#toast-ct{
-  position:fixed;bottom:90px;right:12px;z-index:9999;
-  display:flex;flex-direction:column;gap:8px;
-  width:calc(min(var(--appW), 100vw) - 24px);
-  max-width:380px;
-  pointer-events:none;
-  /* align to app shell */
-  left:50%;transform:translateX(-50%);
-  right:auto;
-}
-.toast{
-  display:flex;align-items:flex-start;gap:10px;
-  background:#13112f;border:1px solid var(--border);
-  border-radius:var(--r);padding:12px 14px;
-  font-size:12px;font-weight:500;
-  box-shadow:0 12px 40px rgba(0,0,0,.7);
-  pointer-events:all;
-  animation:toastIn .25s cubic-bezier(.34,1.56,.64,1);
-  width:100%;
-}
+/* ── BOTTOM NAV ── */
+.bot-nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:var(--appW);background:rgba(8,7,26,.97);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);border-top:1px solid var(--border);display:flex;z-index:200;padding-bottom:env(safe-area-inset-bottom)}
+.nav-t{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:10px 6px;cursor:pointer;gap:4px;border:none;background:none;font-family:'Syne',sans-serif;transition:.2s;position:relative}
+.nav-t:hover{background:rgba(255,255,255,.03)}
+.nav-ico{font-size:20px;line-height:1;transition:transform .2s}
+.nav-lbl{font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--text3);transition:.2s}
+.nav-t.active .nav-ico{transform:scale(1.12)}
+.nav-t.active .nav-lbl{color:var(--purpleL)}
+.nav-t.active::after{content:'';position:absolute;bottom:0;width:28px;height:2px;background:linear-gradient(90deg,var(--purple),var(--cyanL));border-radius:2px 2px 0 0}
+
+/* ── TOAST ── */
+#toast-ct{position:fixed;bottom:90px;z-index:9999;display:flex;flex-direction:column;gap:8px;width:calc(min(var(--appW),100vw) - 24px);max-width:400px;left:50%;transform:translateX(-50%);pointer-events:none}
+.toast{display:flex;align-items:flex-start;gap:10px;background:#13112f;border:1px solid var(--border);border-radius:var(--r);padding:12px 14px;font-size:12px;font-weight:500;box-shadow:0 12px 40px rgba(0,0,0,.7);pointer-events:all;animation:toastIn .25s cubic-bezier(.34,1.56,.64,1);width:100%}
 @keyframes toastIn{from{transform:translateY(10px) scale(.95);opacity:0}to{transform:translateY(0) scale(1);opacity:1}}
 .t-ico{font-size:15px;flex-shrink:0;margin-top:1px}
 .t-title{font-weight:700;font-size:12px;margin-bottom:2px}
 .t-sub{font-size:10px;opacity:.7;line-height:1.4}
-.toast.t-success{border-color:rgba(16,185,129,.4)}.toast.t-success .t-title{color:var(--greenL)}
-.toast.t-error{border-color:rgba(239,68,68,.4)}.toast.t-error .t-title{color:var(--redL)}
-.toast.t-info{border-color:rgba(6,182,212,.35)}.toast.t-info .t-title{color:var(--cyanL)}
+.toast.ts{border-color:rgba(16,185,129,.4)}.toast.ts .t-title{color:var(--greenL)}
+.toast.te{border-color:rgba(239,68,68,.4)}.toast.te .t-title{color:var(--redL)}
+.toast.ti{border-color:rgba(6,182,212,.35)}.toast.ti .t-title{color:var(--cyanL)}
 
-/* ══════════════════════════════════════
-   UTILITIES
-══════════════════════════════════════ */
-.spinner{display:inline-block;width:14px;height:14px;border:2px solid rgba(124,58,237,.3);border-top-color:var(--purpleL);border-radius:50%;animation:spin .8s linear infinite}
-@keyframes spin{to{transform:rotate(360deg)}}
-.empty-msg{text-align:center;padding:28px 14px;color:var(--text3);font-size:13px}
+/* ── UTILS ── */
+.spin{display:inline-block;width:14px;height:14px;border:2px solid rgba(124,58,237,.3);border-top-color:var(--purpleL);border-radius:50%;animation:spn .8s linear infinite}
+@keyframes spn{to{transform:rotate(360deg)}}
+.empty-m{text-align:center;padding:28px 14px;color:var(--text3);font-size:13px}
 .empty-ico{font-size:34px;margin-bottom:10px;display:block}
-.skel{background:linear-gradient(90deg,rgba(255,255,255,.04) 25%,rgba(255,255,255,.08) 50%,rgba(255,255,255,.04) 75%);background-size:200% 100%;animation:shimmer 1.5s infinite;border-radius:6px}
-@keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
+.sk{background:linear-gradient(90deg,rgba(255,255,255,.04) 25%,rgba(255,255,255,.08) 50%,rgba(255,255,255,.04) 75%);background-size:200% 100%;animation:sh 1.5s infinite;border-radius:6px}
+@keyframes sh{0%{background-position:200% 0}100%{background-position:-200% 0}}
 
-/* ══════════════════════════════════════
-   RESPONSIVE FIXES
-══════════════════════════════════════ */
-@media(max-width:430px){
-  .app-shell{border:none}
-  body::before{display:none}
-}
+/* ── RESPONSIVE ── */
+@media(max-width:430px){.app{border:none}body::before{display:none}}
 @media(max-width:380px){
-  .stats-strip{gap:6px}
-  .sc-val{font-size:22px}
-  .vote-row{gap:8px}
-  .btn-yes,.btn-no{font-size:13px;padding:12px 6px}
-  .mc-vote-row{gap:6px}
-  .q-grid{grid-template-columns:1fr}
-  .hdr-logo{font-size:13px}
-  .arc-info{grid-template-columns:1fr}
-  .profile-stats{grid-template-columns:1fr 1fr}
+  .stats-strip{gap:6px}.vote-row{gap:8px}.q-grid{grid-template-columns:1fr}
+  .hdr-logo{font-size:13px}.arc-info{grid-template-columns:1fr}
+  .prof-stats{gap:8px}
 }
 </style>
 </head>
 <body>
 <div id="toast-ct"></div>
 
-<div class="app-shell">
+<div class="app">
 
-  <!-- ═══ HEADER: logo + XP only ═══════════════════════════ -->
-  <header class="app-header">
+  <!-- ══ HEADER: logo + XP + wallet dropdown (NO chain pill) ══ -->
+  <header class="hdr">
     <div class="hdr-logo">ARC PROPHET</div>
-    <!-- XP shown after connect -->
-    <div class="hdr-xp" id="hdr-xp">
-      ⚡ <span id="hdr-xp-val">0</span> XP
+    <div class="hdr-right">
+      <!-- XP shown after connect -->
+      <div class="hdr-xp" id="hdr-xp">⚡ <span id="hdr-xp-val">0</span> XP</div>
+      <!-- Wallet dropdown -->
+      <div id="wallet-wrap">
+        <div id="wallet-btn" onclick="toggleDrop()">
+          <div class="wbtn-dot"></div>
+          <span id="wbtn-addr">—</span>
+          <span class="wbtn-chv">▾</span>
+        </div>
+        <div id="wallet-drop">
+          <div class="drop-hdr">
+            <div class="drop-lbl">Connected Wallet</div>
+            <div class="drop-full" id="drop-full">—</div>
+          </div>
+          <div class="drop-item di-copy" onclick="copyAddr()">📋 &nbsp;Copy Address</div>
+          <div class="drop-item di-disc" onclick="disconnectWallet()">🔌 &nbsp;Disconnect</div>
+        </div>
+      </div>
+      <!-- Connect button -->
+      <button id="btn-connect" onclick="connectWallet()">Connect</button>
     </div>
-    <!-- Connect button (hidden after connect) -->
-    <button id="btn-connect" onclick="connectWallet()">Connect</button>
   </header>
 
-  <!-- ═══ SCROLL AREA ═══════════════════════════════════════ -->
-  <div class="app-content">
+  <!-- ══ SCROLL AREA ══ -->
+  <div class="scroll">
 
-    <!-- ── PAGE: HOME ─────────────────────────────────────── -->
+    <!-- ─── PAGE: HOME ─────────────────────────────────────── -->
     <div class="page active" id="pg-home">
-      <div>
 
-        <!-- Admin panel (owner only) -->
-        <div class="admin-panel" id="admin-panel">
-          <div class="admin-hdr">
-            <div class="admin-title">Admin Panel</div>
-            <div class="admin-badge">Owner Only</div>
-          </div>
-          <div class="admin-lbl">Set Today's Question</div>
-          <input class="a-inp" id="a-q-text" placeholder="Enter prediction question…"/>
-          <div class="a-row">
-            <select class="a-sel" id="a-q-cat">
-              <option value="0">CRYPTO</option>
-              <option value="1">MACRO</option>
-              <option value="2">WORLD</option>
-              <option value="3">ARC</option>
-            </select>
-            <button class="btn-admin" onclick="adminSetQuestion()">📡 Set On-Chain</button>
-          </div>
-          <div class="admin-lbl" style="margin-top:4px">Quick Questions</div>
-          <div class="q-grid">
-            <button class="q-preset" onclick="fillQ('Will BTC close above $95,000 today?',0)">BTC above $95K today?</button>
-            <button class="q-preset" onclick="fillQ('Will ETH daily fees exceed $5M today?',0)">ETH fees exceed $5M?</button>
-            <button class="q-preset" onclick="fillQ('Will Arc Testnet hit 5,000+ TXs today?',3)">Arc 5,000 TXs today?</button>
-            <button class="q-preset" onclick="fillQ('Will crypto market cap rise today?',0)">Crypto market cap rise?</button>
-            <button class="q-preset" onclick="fillQ('Will DXY close above 100 today?',1)">DXY above 100?</button>
-            <button class="q-preset" onclick="fillQ('Will BTC dominance stay above 55%?',0)">BTC dominance 55%+?</button>
-          </div>
-          <div class="admin-div"></div>
-          <div class="admin-lbl">Resolve Today</div>
-          <div class="a-row">
-            <select class="a-sel" id="a-resolve-ans">
-              <option value="true">✅ YES</option>
-              <option value="false">❌ NO</option>
-            </select>
-            <button class="btn-admin" onclick="adminResolve()">✅ Resolve</button>
-          </div>
+      <!-- Admin panel (owner only) -->
+      <div class="admin-panel" id="admin-panel">
+        <div class="admin-hdr">
+          <div class="admin-t">Admin Panel</div>
+          <div class="admin-b">Owner Only</div>
         </div>
-
-        <!-- Hero title -->
-        <div class="hero-title">
-          <div class="hero-name">ARC PROPHET</div>
-          <div class="hero-sub">On-Chain Prediction · Arc Testnet</div>
+        <div class="auto-q-notice">
+          ⚡ Auto-question for today is pre-filled below. Just click Set On-Chain to activate voting.
         </div>
-
-        <!-- Stats -->
-        <div class="stats-strip">
-          <div class="sc"><div class="sc-val cv-xp" id="s-xp">0</div><div class="sc-lbl">XP</div></div>
-          <div class="sc"><div class="sc-val cv-pts" id="s-streak">0</div><div class="sc-lbl">Day Streak</div></div>
-          <div class="sc"><div class="sc-val cv-str" id="s-acc">0%</div><div class="sc-lbl">Accuracy</div></div>
+        <div class="admin-lbl">Set Today's Question On-Chain</div>
+        <input class="a-inp" id="a-q-text" placeholder="Auto-filled from daily rotation…"/>
+        <div class="a-row">
+          <select class="a-sel" id="a-q-cat">
+            <option value="0">CRYPTO</option>
+            <option value="1">MACRO</option>
+            <option value="2">WORLD</option>
+            <option value="3">ARC</option>
+          </select>
+          <button class="btn-admin" onclick="adminSetQuestion()">📡 Set On-Chain</button>
         </div>
-
-        <!-- Daily prediction card -->
-        <div class="daily-card">
-          <div class="dc-top">
-            <div class="dc-label">Daily Prediction</div>
-            <div class="dc-live"><div class="dc-live-dot"></div>LIVE</div>
-          </div>
-          <div class="dc-cat"><span class="cat-pill cp-crypto" id="hero-cat">CRYPTO</span></div>
-          <div class="dc-question" id="hero-question">
-            <div class="skel" style="height:14px;width:88%;margin-bottom:8px"></div>
-            <div class="skel" style="height:14px;width:62%"></div>
-          </div>
-          <div style="margin-bottom:14px">
-            <div class="dcb-hdr">
-              <span>Community Sentiment</span>
-              <span id="hero-pct">50% YES</span>
-            </div>
-            <div class="dcb-track"><div class="dcb-fill" id="hero-fill" style="width:50%"></div></div>
-            <div class="dcb-counts">
-              <span class="dcb-yes" id="hero-yes">YES: 0</span>
-              <span class="dcb-tot" id="hero-tot">0 predictions</span>
-              <span class="dcb-no"  id="hero-no">NO: 0</span>
-            </div>
-          </div>
-          <!-- Action area -->
-          <div id="hero-action">
-            <div class="connect-nudge" onclick="connectWallet()">
-              <div class="cn-icon">🔮</div>
-              <div class="cn-title">Connect Wallet to Predict</div>
-              <div class="cn-sub">Gas in USDC · Arc Testnet · Instant finality</div>
-            </div>
-          </div>
-          <div class="tx-strip" id="hero-tx">
-            <span id="hero-tx-msg">—</span>
-            <a id="hero-tx-link" class="tx-link" href="#" target="_blank" style="display:none"></a>
-          </div>
-          <div class="dc-gas" id="hero-gas" style="display:none">
-            <span>⛽ Est. gas (Arc USDC)</span>
-            <span class="gv" id="hero-gas-val">Estimating…</span>
-          </div>
-          <div class="dc-footer">
-            <span id="hero-tot-cnt">0 total predictions</span>
-            <span>Resolves in <span class="cdwn-val" id="cdwn">--:--:--</span></span>
-          </div>
+        <div class="admin-lbl" style="margin-top:4px">Custom Quick Questions</div>
+        <div class="q-grid">
+          <button class="q-pre" onclick="fillQ('Will BTC close above $95,000 today?',0)">BTC above $95K today?</button>
+          <button class="q-pre" onclick="fillQ('Will ETH daily fees exceed $5M today?',0)">ETH fees exceed $5M?</button>
+          <button class="q-pre" onclick="fillQ('Will Arc Testnet hit 5,000+ TXs today?',3)">Arc 5,000 TXs today?</button>
+          <button class="q-pre" onclick="fillQ('Will crypto market cap rise today?',0)">Crypto market cap rise?</button>
+          <button class="q-pre" onclick="fillQ('Will DXY close above 100 today?',1)">DXY above 100?</button>
+          <button class="q-pre" onclick="fillQ('Will BTC dominance stay above 55%?',0)">BTC dominance 55%+?</button>
         </div>
-
-        <!-- Arc pills -->
-        <div class="arc-pill-row">
-          <div class="arc-pill"><div class="arc-pill-dot"></div>Gas: USDC Not ETH</div>
-          <div class="arc-pill"><div class="arc-pill-dot"></div>Deterministic Finality</div>
-          <div class="arc-pill"><div class="arc-pill-dot"></div>Chain 5042002</div>
+        <div class="a-div"></div>
+        <div class="admin-lbl">Resolve Today</div>
+        <div class="a-row">
+          <select class="a-sel" id="a-resolve-ans"><option value="true">✅ YES</option><option value="false">❌ NO</option></select>
+          <button class="btn-admin" onclick="adminResolve()">✅ Resolve On-Chain</button>
         </div>
-
-        <!-- How It Works — hidden after wallet connect -->
-        <div id="how-it-works">
-          <div class="section-hdr">How It Works</div>
-          <div class="how-list">
-            <div class="how-item">
-              <div class="hi-icon">🔗</div>
-              <div><div class="hi-title">Connect Wallet</div><div class="hi-desc">Link MetaMask — auto-switches to Arc Testnet (Chain 5042002). Gas paid in USDC, no ETH required.</div></div>
-            </div>
-            <div class="how-item">
-              <div class="hi-icon">🔮</div>
-              <div><div class="hi-title">Make Predictions</div><div class="hi-desc">Vote YES or NO on daily questions. Every vote is a real on-chain TX on Arc Testnet.</div></div>
-            </div>
-            <div class="how-item">
-              <div class="hi-icon">⭐</div>
-              <div><div class="hi-title">Earn XP & Rank Up</div><div class="hi-desc">+10 XP per prediction, +25 XP if correct. Build streaks to climb from Novice → Arc Prophet.</div></div>
-            </div>
-          </div>
-          <button class="btn-view-all" onclick="switchTab('markets')">VIEW ALL MARKETS →</button>
-        </div>
-
-        <!-- Leaderboard -->
-        <div class="section-hdr">Leaderboard</div>
-        <div class="lb-card">
-          <div class="lb-card-head">
-            <span class="lb-card-title">🏆 Top Prophets</span>
-            <span style="font-size:10px;color:var(--text3);font-weight:700">Your Position</span>
-          </div>
-          <div id="lb-list"><div class="empty-msg"><span class="spinner"></span></div></div>
-          <div class="lb-footer">
-            <span class="lb-footer-lbl">Your Position</span>
-            <span class="lb-footer-pos">⚡ <span id="my-lb-pos">—</span></span>
-          </div>
-        </div>
-
       </div>
-    </div><!-- end pg-home -->
 
-    <!-- ── PAGE: MARKETS ──────────────────────────────────── -->
+      <!-- Hero -->
+      <div class="hero-title">
+        <div class="hero-name">ARC PROPHET</div>
+        <div class="hero-sub">On-Chain Prediction · Arc Testnet</div>
+      </div>
+
+      <!-- Stats -->
+      <div class="stats-strip">
+        <div class="sc"><div class="sc-val cv-xp" id="s-xp">0</div><div class="sc-lbl">XP</div></div>
+        <div class="sc"><div class="sc-val cv-s"  id="s-str">0</div><div class="sc-lbl">Day Streak</div></div>
+        <div class="sc"><div class="sc-val cv-a"  id="s-acc">0%</div><div class="sc-lbl">Accuracy</div></div>
+      </div>
+
+      <!-- Daily card -->
+      <div class="daily-card">
+        <div class="dc-top">
+          <div class="dc-label">Daily Prediction</div>
+          <div class="dc-live"><div class="dc-live-dot"></div>LIVE</div>
+        </div>
+        <div><span class="cat-pill cp-crypto" id="hero-cat">CRYPTO</span></div>
+        <div class="dc-question" id="hero-q">
+          <div class="sk" style="height:14px;width:88%;margin-bottom:8px"></div>
+          <div class="sk" style="height:14px;width:62%"></div>
+        </div>
+        <div style="margin-bottom:14px">
+          <div class="bar-hdr"><span>Community Sentiment</span><span id="h-pct">50% YES</span></div>
+          <div class="bar-track"><div class="bar-fill" id="h-fill" style="width:50%"></div></div>
+          <div class="bar-counts"><span class="by" id="h-yes">YES: 0</span><span class="bt" id="h-tot">0 predictions</span><span class="bn" id="h-no">NO: 0</span></div>
+        </div>
+        <div id="hero-action">
+          <div class="nudge" onclick="connectWallet()">
+            <div class="nudge-ico">🔮</div>
+            <div class="nudge-title">Connect Wallet to Predict</div>
+            <div class="nudge-sub">Gas in USDC · Arc Testnet · Instant finality</div>
+          </div>
+        </div>
+        <div class="tx-box" id="hero-tx">
+          <span id="hero-tx-msg">—</span>
+          <a id="hero-tx-link" class="tx-link" href="#" target="_blank" style="display:none"></a>
+        </div>
+        <div class="gas-row" id="hero-gas" style="display:none">
+          <span>⛽ Est. gas (Arc USDC)</span>
+          <span class="gv" id="hero-gas-val">Estimating…</span>
+        </div>
+        <div class="dc-footer">
+          <span id="h-tot-cnt">0 total predictions</span>
+          <span>Resolves in <span class="cdwn" id="cdwn">--:--:--</span></span>
+        </div>
+      </div>
+
+      <!-- Arc pills -->
+      <div class="arc-pill-row">
+        <div class="arc-pill"><div class="apd"></div>Gas: USDC Not ETH</div>
+        <div class="arc-pill"><div class="apd"></div>Deterministic Finality</div>
+        <div class="arc-pill"><div class="apd"></div>Chain 5042002</div>
+      </div>
+
+      <!-- How it works (hidden after connect) -->
+      <div id="how-section">
+        <div class="sh">How It Works</div>
+        <div class="how-list">
+          <div class="how-item"><div class="hi-ico">🔗</div><div><div class="hi-t">Connect Wallet</div><div class="hi-d">Link MetaMask — auto-switches to Arc Testnet (Chain 5042002). Gas paid in USDC, no ETH required.</div></div></div>
+          <div class="how-item"><div class="hi-ico">🔮</div><div><div class="hi-t">Make Predictions</div><div class="hi-d">Vote YES or NO on daily questions. Every vote is a real on-chain TX on Arc Testnet.</div></div></div>
+          <div class="how-item"><div class="hi-ico">⭐</div><div><div class="hi-t">Earn XP & Rank Up</div><div class="hi-d">+10 XP per prediction, +25 XP if correct. Build streaks to climb from Novice → Arc Prophet.</div></div></div>
+        </div>
+        <button class="btn-view-all" onclick="switchTab('markets')">VIEW ALL MARKETS →</button>
+      </div>
+
+      <!-- Leaderboard -->
+      <div class="sh">Leaderboard</div>
+      <div class="lb-card">
+        <div class="lb-head"><span class="lb-head-t">🏆 Top Prophets</span><span style="font-size:10px;color:var(--text3);font-weight:700">Your Position</span></div>
+        <div id="lb-list"><div class="empty-m"><span class="spin"></span></div></div>
+        <div class="lb-foot">
+          <span class="lb-foot-lbl">Your Position</span>
+          <span class="lb-foot-pos">⚡ <span id="my-pos">—</span></span>
+        </div>
+      </div>
+
+    </div><!-- end home -->
+
+    <!-- ─── PAGE: MARKETS ──────────────────────────────────── -->
     <div class="page" id="pg-markets">
 
       <div class="page-title">MARKETS</div>
       <div class="page-sub">On-Chain Prediction Markets</div>
 
-      <div class="section-hdr">Today's Market</div>
+      <div class="sh">Today's Market</div>
       <div class="mkt-card" id="mkt-today">
         <div class="mc-top">
-          <span class="cat-pill cp-crypto" id="mkt-today-cat">CRYPTO</span>
+          <span class="cat-pill cp-crypto" id="mt-cat">CRYPTO</span>
           <div class="dc-live"><div class="dc-live-dot"></div>LIVE</div>
         </div>
-        <div class="mc-question" id="mkt-today-q">
-          <div class="skel" style="height:13px;width:88%;margin-bottom:8px"></div>
-          <div class="skel" style="height:13px;width:62%"></div>
+        <div class="mc-q" id="mt-q">
+          <div class="sk" style="height:13px;width:88%;margin-bottom:8px"></div>
+          <div class="sk" style="height:13px;width:62%"></div>
         </div>
         <div>
-          <div class="mc-bar-hdr">
-            <span>Community Sentiment</span>
-            <span id="mkt-today-pct">50%</span>
-          </div>
-          <div class="mc-bar-track"><div class="mc-bar-fill mbf-yes" id="mkt-today-fill" style="width:50%"></div></div>
-          <div class="mc-counts">
-            <span class="mcc-y" id="mkt-today-yes">YES: 0</span>
-            <span class="mcc-t" id="mkt-today-tot">0 predictions</span>
-            <span class="mcc-n" id="mkt-today-no">NO: 0</span>
-          </div>
+          <div class="mc-bar-hdr"><span>Community Sentiment</span><span id="mt-pct">50%</span></div>
+          <div class="mc-track"><div class="mc-fill mfy" id="mt-fill" style="width:50%"></div></div>
+          <div class="mc-cnts"><span class="mcy" id="mt-yes">YES: 0</span><span class="mct" id="mt-tot">0 predictions</span><span class="mcn" id="mt-no">NO: 0</span></div>
         </div>
-        <div id="mkt-today-action" style="margin-top:12px">
-          <div class="connect-nudge" onclick="connectWallet()" style="padding:12px">
-            <div class="cn-title" style="font-size:12px">🔮 Connect wallet to vote</div>
-          </div>
+        <div id="mt-action">
+          <div class="nudge" onclick="connectWallet()" style="padding:12px;margin-top:12px"><div class="nudge-title" style="font-size:12px">🔮 Connect wallet to vote</div></div>
         </div>
-        <div class="mc-gas" id="mkt-today-gas" style="display:none">
-          <span>Gas estimate</span><span class="gv" id="mkt-today-gas-val">Estimating…</span>
-        </div>
-        <div class="mc-tx" id="mkt-today-tx">
-          <div id="mkt-today-tx-msg">—</div>
-          <a id="mkt-today-tx-link" href="#" target="_blank" style="display:none"></a>
-        </div>
-        <div class="mc-footer">
-          <span>Today's market</span>
-          <span>Resolves midnight UTC</span>
-        </div>
+        <div class="mc-gas" id="mt-gas" style="display:none"><span>Gas estimate</span><span class="gv" id="mt-gas-val">Estimating…</span></div>
+        <div class="mc-tx" id="mt-tx"><div id="mt-tx-msg">—</div><a id="mt-tx-link" href="#" target="_blank" style="display:none"></a></div>
+        <div class="mc-footer"><span>Today's market</span><span>Resolves midnight UTC</span></div>
       </div>
 
-      <div class="section-hdr" style="margin-top:8px">Yesterday's Market</div>
-      <div class="mkt-card resolved" id="mkt-yest">
+      <div class="sh" style="margin-top:8px">Yesterday's Market</div>
+      <div class="mkt-card res" id="mkt-yest">
         <div class="mc-top">
-          <span class="cat-pill cp-crypto" id="mkt-yest-cat">CRYPTO</span>
-          <span class="mc-resolved-badge">RESOLVED</span>
+          <span class="cat-pill cp-crypto" id="my-cat">CRYPTO</span>
+          <span class="res-badge">RESOLVED</span>
         </div>
-        <div class="mc-question" id="mkt-yest-q">
-          <div class="skel" style="height:13px;width:88%;margin-bottom:8px"></div>
-          <div class="skel" style="height:13px;width:62%"></div>
+        <div class="mc-q" id="my-q">
+          <div class="sk" style="height:13px;width:88%;margin-bottom:8px"></div>
+          <div class="sk" style="height:13px;width:62%"></div>
         </div>
         <div>
-          <div class="mc-bar-hdr">
-            <span>Final Result</span>
-            <span id="mkt-yest-pct">—</span>
-          </div>
-          <div class="mc-bar-track"><div class="mc-bar-fill mbf-yes" id="mkt-yest-fill" style="width:50%"></div></div>
-          <div class="mc-counts">
-            <span class="mcc-y" id="mkt-yest-yes">YES: 0</span>
-            <span class="mcc-t" id="mkt-yest-tot">—</span>
-            <span class="mcc-n" id="mkt-yest-no">NO: 0</span>
-          </div>
+          <div class="mc-bar-hdr"><span>Final Result</span><span id="my-pct">—</span></div>
+          <div class="mc-track"><div class="mc-fill mfy" id="my-fill" style="width:50%"></div></div>
+          <div class="mc-cnts"><span class="mcy" id="my-yes">YES: 0</span><span class="mct" id="my-tot">—</span><span class="mcn" id="my-no">NO: 0</span></div>
         </div>
-        <div id="mkt-yest-result"></div>
-        <div id="mkt-yest-claim"></div>
-        <div class="mc-footer">
-          <span>Yesterday's market</span>
-          <span id="mkt-yest-cnt">—</span>
-        </div>
+        <div id="my-result"></div>
+        <div id="my-claim"></div>
+        <div class="mc-footer"><span>Yesterday's market</span><span id="my-cnt">—</span></div>
       </div>
 
-    </div><!-- end pg-markets -->
+    </div><!-- end markets -->
 
-    <!-- ── PAGE: PROFILE ──────────────────────────────────── -->
+    <!-- ─── PAGE: PROFILE ──────────────────────────────────── -->
     <div class="page" id="pg-profile">
       <div id="profile-content">
-        <div class="empty-msg">
-          <span class="empty-ico">🔮</span>
-          Connect your wallet to see your profile
-        </div>
+        <div class="empty-m"><span class="empty-ico">🔮</span>Connect wallet to see profile</div>
       </div>
     </div>
 
-  </div><!-- end app-content -->
+  </div><!-- end scroll -->
 
   <!-- BOTTOM NAV -->
-  <nav class="bottom-nav">
-    <button class="nav-tab active" id="nav-home" onclick="switchTab('home')">
-      <span class="nav-icon">🏠</span>
-      <span class="nav-label">Home</span>
-    </button>
-    <button class="nav-tab" id="nav-markets" onclick="switchTab('markets')">
-      <span class="nav-icon">📊</span>
-      <span class="nav-label">Markets</span>
-    </button>
-    <button class="nav-tab" id="nav-profile" onclick="switchTab('profile')">
-      <span class="nav-icon">👤</span>
-      <span class="nav-label">Profile</span>
-    </button>
+  <nav class="bot-nav">
+    <button class="nav-t active" id="nav-home"    onclick="switchTab('home')">    <span class="nav-ico">🏠</span><span class="nav-lbl">Home</span></button>
+    <button class="nav-t"        id="nav-markets"  onclick="switchTab('markets')"> <span class="nav-ico">📊</span><span class="nav-lbl">Markets</span></button>
+    <button class="nav-t"        id="nav-profile"  onclick="switchTab('profile')"> <span class="nav-ico">👤</span><span class="nav-lbl">Profile</span></button>
   </nav>
 
-</div><!-- end app-shell -->
+</div><!-- end app -->
 
 <script>
-// ── CONFIG ────────────────────────────────────────────────
+// ══════════════════════════════════════════
+//  CONFIG
+// ══════════════════════════════════════════
 const CFG = {
-  CONTRACT: "0x9C791fe86ccDC68d8A3aF2e819C8fae493A6Df20",
+  CONTRACT: "YOUR_CONTRACT_ADDRESS_HERE",
   OWNER:    "YOUR_WALLET_ADDRESS_HERE",
   CHAIN_ID:  5042002n,
   CHAIN_HEX: "0x4CEF52",
@@ -938,15 +566,72 @@ const CFG = {
   EXPLORER:  "https://testnet.arcscan.app",
 };
 const FIREBASE_CFG = {
-  apiKey:            "AIzaSyDihTfIB-nUpzXxAj7hmmBf0-_XoO_h-BQ",
-  authDomain:        "arc-prophet.firebaseapp.com",
-  projectId:         "arc-prophet",
-  storageBucket:     "arc-prophet.firebasestorage.app",
-  messagingSenderId: "876946917090",
-  appId:             "1:876946917090:web:9ea2893ebba6a76e4d80bb",
-  measurementId:     "G-Z4WVN8X57R",
+  apiKey:"AIzaSyDihTfIB-nUpzXxAj7hmmBf0-_XoO_h-BQ",
+  authDomain:"arc-prophet.firebaseapp.com",
+  projectId:"arc-prophet",
+  storageBucket:"arc-prophet.firebasestorage.app",
+  messagingSenderId:"876946917090",
+  appId:"1:876946917090:web:9ea2893ebba6a76e4d80bb",
+  measurementId:"G-Z4WVN8X57R",
 };
 
+// ══════════════════════════════════════════
+//  AUTO-ROTATING DAILY QUESTIONS (30 questions, rotate by day)
+//  No admin TX needed — questions auto-change every day!
+// ══════════════════════════════════════════
+const AUTO_QUESTIONS = [
+  { text:"Will BTC close above $95,000 today?",          cat:0 },
+  { text:"Will ETH daily fees exceed $5M today?",         cat:0 },
+  { text:"Will global crypto market cap rise today?",     cat:0 },
+  { text:"Will BTC dominance stay above 55% today?",      cat:0 },
+  { text:"Will ETH/BTC ratio rise above 0.033 today?",    cat:0 },
+  { text:"Will BNB close above $600 today?",              cat:0 },
+  { text:"Will SOL close above $180 today?",              cat:0 },
+  { text:"Will BTC see a green weekly candle close?",     cat:0 },
+  { text:"Will total DeFi TVL exceed $120B today?",       cat:0 },
+  { text:"Will BTC spot ETF daily inflows exceed $500M?", cat:0 },
+  { text:"Will the US Dollar Index close above 100?",     cat:1 },
+  { text:"Will US 10-year Treasury yield stay below 4.5%?",cat:1},
+  { text:"Will gold (XAUUSD) close above $3,300 today?",  cat:1 },
+  { text:"Will oil (WTI crude) close above $80 today?",   cat:1 },
+  { text:"Will the S&P 500 close above 5,500 today?",     cat:1 },
+  { text:"Will the Fed signal a rate cut this week?",     cat:1 },
+  { text:"Will NASDAQ close above 19,000 today?",         cat:1 },
+  { text:"Will a major bank announce crypto services today?",cat:2},
+  { text:"Will any country announce BTC as legal tender?", cat:2 },
+  { text:"Will a top-10 exchange list a new token today?", cat:2 },
+  { text:"Will a major blockchain hack be reported today?",cat:2 },
+  { text:"Will any new Layer-1 blockchain launch mainnet?",cat:2 },
+  { text:"Will Arc Testnet process more than 5,000 TXs today?",cat:3},
+  { text:"Will Arc Discord reach 15,000 members this week?",cat:3},
+  { text:"Will a new dApp deploy on Arc Testnet today?",  cat:3 },
+  { text:"Will Arc gas fees stay below $0.001 per TX today?",cat:3},
+  { text:"Will Arc Testnet uptime stay 100% today?",      cat:3 },
+  { text:"Will ETH Layer-2 TVL exceed $50B today?",       cat:0 },
+  { text:"Will XRP close above $2.50 today?",             cat:0 },
+  { text:"Will crypto fear & greed index stay above 60?", cat:0 },
+];
+
+function getTodayQuestion(dayNum) {
+  return AUTO_QUESTIONS[dayNum % AUTO_QUESTIONS.length];
+}
+
+const CATS = {
+  0:{name:"CRYPTO",cls:"cp-crypto"},1:{name:"MACRO",cls:"cp-macro"},
+  2:{name:"WORLD",cls:"cp-world"},3:{name:"ARC",cls:"cp-arc"},
+};
+
+function rankOf(xp){
+  if(xp<100)  return{n:"Novice",c:"#64748b",next:100,i:"👁️"};
+  if(xp<300)  return{n:"Analyst",c:"#22d3ee",next:300,i:"🔮"};
+  if(xp<700)  return{n:"Strategist",c:"#a78bfa",next:700,i:"⚡"};
+  if(xp<1500) return{n:"Oracle",c:"#fbbf24",next:1500,i:"🌟"};
+  return{n:"Arc Prophet",c:"#f87171",next:9999,i:"🔱"};
+}
+
+// ══════════════════════════════════════════
+//  ABI
+// ══════════════════════════════════════════
 const ABI = [
   "function predict(uint256 day, bool answer) external",
   "function claimResult(uint256 day) external",
@@ -961,179 +646,242 @@ const ABI = [
   "event PredictionMade(address indexed user, uint256 indexed day, bool answer, uint8 category, uint256 yesTotal, uint256 noTotal, uint256 timestamp)",
 ];
 
-const CATS = {
-  0:{name:"CRYPTO",cls:"cp-crypto"},1:{name:"MACRO",cls:"cp-macro"},
-  2:{name:"WORLD",cls:"cp-world"},3:{name:"ARC",cls:"cp-arc"},
-};
-
-function rankOf(xp) {
-  if(xp<100)  return{n:"Novice",     c:"#64748b",next:100, i:"👁️"};
-  if(xp<300)  return{n:"Analyst",    c:"#22d3ee",next:300, i:"🔮"};
-  if(xp<700)  return{n:"Strategist", c:"#a78bfa",next:700, i:"⚡"};
-  if(xp<1500) return{n:"Oracle",     c:"#fbbf24",next:1500,i:"🌟"};
-  return            {n:"Arc Prophet",c:"#f87171",next:9999,i:"🔱"};
-}
-
+// ══════════════════════════════════════════
+//  STATE
+// ══════════════════════════════════════════
 let provider, signer, contract, db;
 let userAddress = null;
 let todayDay    = Math.floor(Date.now()/1000/86400);
-let totalGasUSDC = 0;
+let todayQData  = getTodayQuestion(todayDay); // auto daily question
+let totalGas    = 0;
 let lbUnsub     = null;
+let dropOpen    = false;
 let currentPage = "home";
-const isContractSet = () => CFG.CONTRACT !== "YOUR_CONTRACT_ADDRESS_HERE";
+const isCon     = () => CFG.CONTRACT !== "YOUR_CONTRACT_ADDRESS_HERE";
 
-// ── INIT ──────────────────────────────────────────────────
-async function init() {
-  setInterval(tick, 1000); tick();
+// ══════════════════════════════════════════
+//  INIT
+// ══════════════════════════════════════════
+async function init(){
+  setInterval(tick,1000); tick();
+
+  // Firebase
+  try{ firebase.initializeApp(FIREBASE_CFG); db=firebase.firestore(); loadLeaderboard(); }
+  catch(e){ console.warn("Firebase:",e.message); }
+
+  // Pre-fill admin with today's auto question
+  const qi = document.getElementById("a-q-text");
+  if(qi){ qi.value = todayQData.text; }
+  const qc = document.getElementById("a-q-cat");
+  if(qc){ qc.value = String(todayQData.cat); }
+
+  // Load public data (no wallet needed)
   loadPublicData();
 
-  try {
-    firebase.initializeApp(FIREBASE_CFG);
-    db = firebase.firestore();
-    loadLeaderboard();
-  } catch(e) { console.warn("Firebase:", e.message); }
+  // ── SILENT AUTO-RECONNECT (no popup on refresh) ──
+  if(window.ethereum){
+    try{
+      const accounts = await window.ethereum.request({method:"eth_accounts"});
+      if(accounts && accounts.length > 0){
+        // Already authorized — reconnect silently
+        await connectWallet(true);
+      }
+    }catch(e){ console.log("No pre-auth:",e.message); }
 
-  if(window.ethereum?.selectedAddress) connectWallet();
+    window.ethereum.on("chainChanged",()=>location.reload());
+    window.ethereum.on("accountsChanged",accs=>{
+      if(!accs||!accs.length) disconnectWallet();
+      else location.reload();
+    });
+  }
+
+  // Close dropdown on outside click
+  document.addEventListener("click",e=>{
+    if(!document.getElementById("wallet-wrap").contains(e.target)) closeDrop();
+  });
 }
 
-// ── COUNTDOWN ─────────────────────────────────────────────
-function tick() {
-  const now = new Date();
-  const end = new Date(Date.UTC(now.getUTCFullYear(),now.getUTCMonth(),now.getUTCDate()+1));
-  const d   = end - now;
-  const p   = n => String(Math.floor(n)).padStart(2,"0");
-  const el  = document.getElementById("cdwn");
-  if(el) el.textContent = `${p(d/3600000)}:${p((d%3600000)/60000)}:${p((d%60000)/1000)}`;
+// ══════════════════════════════════════════
+//  COUNTDOWN
+// ══════════════════════════════════════════
+function tick(){
+  const now=new Date();
+  const end=new Date(Date.UTC(now.getUTCFullYear(),now.getUTCMonth(),now.getUTCDate()+1));
+  const d=end-now, p=n=>String(Math.floor(n)).padStart(2,"0");
+  const el=document.getElementById("cdwn");
+  if(el) el.textContent=`${p(d/3600000)}:${p((d%3600000)/60000)}:${p((d%60000)/1000)}`;
 }
 
-// ── TAB SWITCH ────────────────────────────────────────────
-function switchTab(name) {
+// ══════════════════════════════════════════
+//  TAB SWITCH
+// ══════════════════════════════════════════
+function switchTab(name){
   ["home","markets","profile"].forEach(t=>{
     document.getElementById("pg-"+t).classList.toggle("active",t===name);
     document.getElementById("nav-"+t).classList.toggle("active",t===name);
   });
-  currentPage = name;
-  document.querySelector(".app-content").scrollTop = 0;
+  currentPage=name;
+  document.querySelector(".scroll").scrollTop=0;
   if(name==="profile") renderProfile();
 }
 
-// ── PUBLIC DATA ───────────────────────────────────────────
-async function loadPublicData() {
-  if(!isContractSet()) {
-    // Demo data — no errors shown
-    fillHero("Will BTC close above $95,000 today?",0,47,31);
-    fillYest("Will ETH daily fees exceed $5M?",0,true,true,61,39);
+// ══════════════════════════════════════════
+//  PUBLIC DATA — question from auto-rotation
+//  (also reads vote counts from contract if deployed)
+// ══════════════════════════════════════════
+async function loadPublicData(){
+  // Always display the auto-rotating question
+  const q = todayQData;
+  fillHero(q.text, q.cat, 0, 0);
+
+  if(!isCon()){
+    // Contract not set — show demo vote counts
+    fillHero(q.text, q.cat, 47, 31);
+    fillYest(null, 0, false, false, 0, 0);
     return;
   }
-  try {
+
+  try{
     const rp  = new ethers.JsonRpcProvider(CFG.RPC);
     const rc  = new ethers.Contract(CFG.CONTRACT, ABI, rp);
     const day = await rc.todayDay();
     todayDay  = Number(day);
-    const [tT,tC,,,tY,tN]     = await rc.getQuestion(day);
-    const [yT,yC,yR,yA,yY,yN] = await rc.getQuestion(day-1n);
-    fillHero(tT||null,Number(tC),Number(tY),Number(tN));
-    fillYest(yT||null,Number(yC),yR,yA,Number(yY),Number(yN));
-    rc.on(rc.filters.PredictionMade(null,day),(u,d,a,c,yT,nT)=>{
-      const [y,n]=[Number(yT),Number(nT)];
-      setBar("hero",y,n); setBar("mkt-today",y,n);
-      document.getElementById("hero-tot-cnt").textContent=(y+n)+" total predictions";
+    todayQData= getTodayQuestion(todayDay);
+
+    // Get vote counts for today (question text always from auto-rotation)
+    const [,,,, tY, tN] = await rc.getQuestion(day);
+    fillHero(todayQData.text, todayQData.cat, Number(tY), Number(tN));
+
+    // Yesterday
+    const [yT, yC, yR, yA, yY, yN] = await rc.getQuestion(day-1n);
+    const yDay = todayDay - 1;
+    const yQ   = getTodayQuestion(yDay);
+    fillYest(yQ.text, yQ.cat, yR, yA, Number(yY), Number(yN));
+
+    // Live event listener
+    rc.on(rc.filters.PredictionMade(null,day),(u,d,a,c,yT2,nT)=>{
+      const [y,n]=[Number(yT2),Number(nT)];
+      setBar("h",y,n); setBar("mt",y,n);
+      document.getElementById("h-tot-cnt").textContent=(y+n)+" total predictions";
     });
-  } catch(e) {
+
+    // Admin pre-fill
+    const qi=document.getElementById("a-q-text");
+    if(qi) qi.value=todayQData.text;
+    const qc=document.getElementById("a-q-cat");
+    if(qc) qc.value=String(todayQData.cat);
+
+  }catch(e){
     console.error("loadPublicData:",e);
-    fillHero("Will BTC close above $95,000 today?",0,47,31);
-    fillYest("Will ETH daily fees exceed $5M?",0,true,true,61,39);
+    fillHero(todayQData.text, todayQData.cat, 0, 0);
+    fillYest(null, 0, false, false, 0, 0);
   }
 }
 
-function fillHero(text,cat,yes,no) {
+function fillHero(text,cat,yes,no){
   const ci=CATS[cat]||CATS[0];
   const hc=document.getElementById("hero-cat");
   hc.textContent=ci.name; hc.className="cat-pill "+ci.cls;
-  document.getElementById("hero-question").textContent=text||"No question set for today yet.";
-  setBar("hero",yes,no);
-  document.getElementById("hero-tot-cnt").textContent=(yes+no)+" total predictions";
-  const mc=document.getElementById("mkt-today-cat");
+  document.getElementById("hero-q").textContent=text||"Loading today's question…";
+  setBar("h",yes,no);
+  document.getElementById("h-tot-cnt").textContent=(yes+no)+" total predictions";
+  const mc=document.getElementById("mt-cat");
   mc.textContent=ci.name; mc.className="cat-pill "+ci.cls;
-  document.getElementById("mkt-today-q").textContent=text||"No question set for today yet.";
-  setBar("mkt-today",yes,no);
+  document.getElementById("mt-q").textContent=text||"Loading today's question…";
+  setBar("mt",yes,no);
   if(userAddress){ refreshHeroAction(); refreshMktAction(); }
 }
 
-function fillYest(text,cat,resolved,answer,yes,no) {
-  const ci=CATS[cat]||CATS[0];
-  const yc=document.getElementById("mkt-yest-cat");
+function fillYest(text,cat,resolved,answer,yes,no){
+  const yDay=todayDay-1;
+  const q=getTodayQuestion(yDay);
+  const displayText=text||q.text;
+  const displayCat=cat||q.cat;
+  const ci=CATS[displayCat]||CATS[0];
+  const yc=document.getElementById("my-cat");
   yc.textContent=ci.name; yc.className="cat-pill "+ci.cls;
-  document.getElementById("mkt-yest-q").textContent=text||"No question available.";
-  setBar("mkt-yest",yes,no);
-  document.getElementById("mkt-yest-cnt").textContent=(yes+no)+" predictions";
-  const ra=document.getElementById("mkt-yest-result");
-  if(resolved) {
+  document.getElementById("my-q").textContent=displayText;
+  setBar("my",yes,no);
+  document.getElementById("my-cnt").textContent=(yes+no)+" predictions";
+  const ra=document.getElementById("my-result");
+  if(resolved){
     const yp=Math.round(yes/(yes+no||1)*100);
-    ra.innerHTML=`<div class="mc-result ${answer?"mr-yes":"mr-no"}"><div class="mr-h" style="color:${answer?"var(--greenL)":"var(--redL)"}">${answer?"✅ YES won":"❌ NO won"}</div><div class="mr-sub">${answer?yp:100-yp}% of community agreed</div></div>`;
-  } else {
+    ra.innerHTML=`<div class="mc-result ${answer?"mryes":"mrno"}"><div class="mrh" style="color:${answer?"var(--greenL)":"var(--redL)"}">${answer?"✅ YES won":"❌ NO won"}</div><div class="mrsub">${answer?yp:100-yp}% agreed · ${yes+no} total votes</div></div>`;
+  }else{
     ra.innerHTML=`<div style="text-align:center;padding:11px;background:rgba(71,85,105,.06);border:1px solid rgba(71,85,105,.2);border-radius:12px;font-size:11px;color:var(--text3)">⏳ Awaiting resolution</div>`;
   }
 }
 
-function setBar(pfx,yes,no) {
-  const total=yes+no, yp=total>0?Math.round((yes/total)*100):50;
+function setBar(pfx,yes,no){
+  const t=yes+no, yp=t>0?Math.round((yes/t)*100):50;
   const g=id=>document.getElementById(pfx+"-"+id);
-  const fill=g("fill"); if(fill) fill.style.width=yp+"%";
-  const pct=g("pct"); if(pct) pct.textContent=yp+"% YES";
-  const ye=g("yes"); if(ye) ye.textContent="YES: "+yes;
-  const ne=g("no");  if(ne) ne.textContent="NO: "+no;
-  const te=g("tot"); if(te) te.textContent=total+" prediction"+(total!==1?"s":"");
+  const f=g("fill");  if(f) f.style.width=yp+"%";
+  const p=g("pct");   if(p) p.textContent=yp+"% YES";
+  const ye=g("yes");  if(ye) ye.textContent="YES: "+yes;
+  const ne=g("no");   if(ne) ne.textContent="NO: "+no;
+  const te=g("tot");  if(te) te.textContent=t+" prediction"+(t!==1?"s":"");
 }
 
-// ── CONNECT WALLET ────────────────────────────────────────
-async function connectWallet() {
+// ══════════════════════════════════════════
+//  CONNECT WALLET  (silent=true means no popup)
+// ══════════════════════════════════════════
+async function connectWallet(silent=false){
   if(!window.ethereum){ toast("MetaMask Not Found","Install MetaMask first","error"); return; }
-  try {
-    provider    = new ethers.BrowserProvider(window.ethereum);
-    await provider.send("eth_requestAccounts",[]);
+  try{
+    provider = new ethers.BrowserProvider(window.ethereum);
+    // Use eth_requestAccounts for manual connect, eth_accounts for silent
+    if(silent){
+      const accounts=await window.ethereum.request({method:"eth_accounts"});
+      if(!accounts||!accounts.length) return;
+    } else {
+      await provider.send("eth_requestAccounts",[]);
+    }
     signer      = await provider.getSigner();
     userAddress = await signer.getAddress();
 
     const net=await provider.getNetwork();
     if(net.chainId !== CFG.CHAIN_ID){
+      if(silent){ return; } // Don't force chain switch silently
       await switchToArc();
       provider    = new ethers.BrowserProvider(window.ethereum);
       signer      = await provider.getSigner();
       userAddress = await signer.getAddress();
     }
 
-    if(isContractSet())
-      contract = new ethers.Contract(CFG.CONTRACT, ABI, signer);
+    if(isCon()) contract=new ethers.Contract(CFG.CONTRACT,ABI,signer);
 
-    // Header: hide connect btn, show XP
+    // ── Update header ──
     document.getElementById("btn-connect").style.display="none";
+    document.getElementById("wallet-wrap").style.display="block";
     document.getElementById("hdr-xp").style.display="flex";
+    document.getElementById("wbtn-addr").textContent=shorten(userAddress);
+    document.getElementById("drop-full").textContent=userAddress;
 
-    // Show admin if owner
+    // Admin panel
     if(CFG.OWNER!=="YOUR_WALLET_ADDRESS_HERE" &&
        userAddress.toLowerCase()===CFG.OWNER.toLowerCase())
       document.getElementById("admin-panel").style.display="block";
 
-    // Hide How It Works after connect
-    const hiw=document.getElementById("how-it-works");
-    if(hiw) hiw.style.display="none";
+    // Hide "How It Works" after connect
+    const hw=document.getElementById("how-section");
+    if(hw) hw.style.display="none";
 
-    toast("Connected! ⚡","Arc Testnet · Gas in USDC","success");
+    if(!silent) toast("Connected! ⚡","Arc Testnet · Gas in USDC","success");
+
     await Promise.all([refreshHeroAction(),refreshMktAction(),loadMyStats(),loadHistory()]);
 
-    window.ethereum.on("chainChanged",()=>location.reload());
-    window.ethereum.on("accountsChanged",()=>location.reload());
-  } catch(e){
-    console.error(e);
-    toast("Connection Failed",e.message?.substring(0,60)||"Unknown error","error");
+  }catch(e){
+    if(!silent){
+      console.error(e);
+      toast("Connection Failed",e.message?.substring(0,60)||"Unknown error","error");
+    }
   }
 }
 
-async function switchToArc() {
-  try {
+async function switchToArc(){
+  try{
     await window.ethereum.request({method:"wallet_switchEthereumChain",params:[{chainId:CFG.CHAIN_HEX}]});
-  } catch(e) {
+  }catch(e){
     if(e.code===4902||e.code===-32603)
       await window.ethereum.request({method:"wallet_addEthereumChain",params:[{
         chainId:CFG.CHAIN_HEX,chainName:"Arc Testnet",
@@ -1144,58 +892,78 @@ async function switchToArc() {
   }
 }
 
-function disconnectWallet() {
+// ══════════════════════════════════════════
+//  WALLET DROPDOWN
+// ══════════════════════════════════════════
+function toggleDrop(){
+  dropOpen=!dropOpen;
+  document.getElementById("wallet-drop").classList.toggle("show",dropOpen);
+  document.getElementById("wallet-btn").classList.toggle("open",dropOpen);
+}
+function closeDrop(){
+  dropOpen=false;
+  document.getElementById("wallet-drop").classList.remove("show");
+  document.getElementById("wallet-btn").classList.remove("open");
+}
+function copyAddr(){
+  navigator.clipboard.writeText(userAddress||"")
+    .then(()=>{toast("Copied","Address copied to clipboard","success");closeDrop();})
+    .catch(()=>toast("Error","Could not copy","error"));
+}
+function disconnectWallet(){
   userAddress=null; provider=signer=contract=null;
   document.getElementById("btn-connect").style.display="block";
+  document.getElementById("wallet-wrap").style.display="none";
   document.getElementById("hdr-xp").style.display="none";
   document.getElementById("hdr-xp-val").textContent="0";
   document.getElementById("admin-panel").style.display="none";
+  closeDrop();
   // Show how it works again
-  const hiw=document.getElementById("how-it-works");
-  if(hiw) hiw.style.display="block";
-  // Reset stats
-  ["s-xp","s-streak","s-acc"].forEach(id=>{const e=document.getElementById(id);if(e)e.textContent=id==="s-acc"?"0%":"0";});
-  // Reset actions
-  document.getElementById("hero-action").innerHTML=`<div class="connect-nudge" onclick="connectWallet()"><div class="cn-icon">🔮</div><div class="cn-title">Connect Wallet to Predict</div><div class="cn-sub">Gas in USDC · Arc Testnet</div></div>`;
+  const hw=document.getElementById("how-section");
+  if(hw) hw.style.display="block";
+  // Reset
+  ["s-xp","s-str"].forEach(id=>document.getElementById(id).textContent="0");
+  document.getElementById("s-acc").textContent="0%";
+  document.getElementById("hero-action").innerHTML=nudgeHTML();
   document.getElementById("hero-gas").style.display="none";
   document.getElementById("hero-tx").style.display="none";
-  document.getElementById("mkt-today-action").innerHTML=`<div class="connect-nudge" onclick="connectWallet()" style="padding:12px"><div class="cn-title" style="font-size:12px">🔮 Connect wallet to vote</div></div>`;
-  document.getElementById("mkt-today-gas").style.display="none";
-  document.getElementById("mkt-yest-claim").innerHTML="";
-  document.getElementById("profile-content").innerHTML=`<div class="empty-msg"><span class="empty-ico">🔮</span>Connect wallet to see profile</div>`;
-  toast("Disconnected","Wallet disconnected","info");
+  document.getElementById("mt-action").innerHTML=`<div class="nudge" onclick="connectWallet()" style="padding:12px;margin-top:12px"><div class="nudge-title" style="font-size:12px">🔮 Connect wallet to vote</div></div>`;
+  document.getElementById("mt-gas").style.display="none";
+  document.getElementById("my-claim").innerHTML="";
+  document.getElementById("profile-content").innerHTML=`<div class="empty-m"><span class="empty-ico">🔮</span>Connect wallet to see profile</div>`;
+  toast("Disconnected","Wallet disconnected","success");
+}
+function nudgeHTML(){
+  return`<div class="nudge" onclick="connectWallet()"><div class="nudge-ico">🔮</div><div class="nudge-title">Connect Wallet to Predict</div><div class="nudge-sub">Gas in USDC · Arc Testnet</div></div>`;
 }
 
-// ── GAS ESTIMATE ──────────────────────────────────────────
-async function estimateGas() {
+// ══════════════════════════════════════════
+//  GAS ESTIMATE
+// ══════════════════════════════════════════
+async function estimateGas(){
   if(!contract||!userAddress) return;
-  try {
+  try{
     const fd=await provider.getFeeData();
     const e=await contract.predict.estimateGas(BigInt(todayDay),true);
     const c=Number(ethers.formatEther(e*130n/100n*(fd.gasPrice||1000000000n)));
     const s=`~${c.toFixed(6)} USDC`;
-    ["hero-gas-val","mkt-today-gas-val"].forEach(id=>{const el=document.getElementById(id);if(el)el.textContent=s;});
-  } catch {
-    ["hero-gas-val","mkt-today-gas-val"].forEach(id=>{const el=document.getElementById(id);if(el)el.textContent="~0.000050 USDC";});
+    ["hero-gas-val","mt-gas-val"].forEach(id=>{const el=document.getElementById(id);if(el)el.textContent=s;});
+  }catch{
+    ["hero-gas-val","mt-gas-val"].forEach(id=>{const el=document.getElementById(id);if(el)el.textContent="~0.000050 USDC";});
   }
 }
 
-// ── HERO ACTION ───────────────────────────────────────────
-async function refreshHeroAction() {
+// ══════════════════════════════════════════
+//  REFRESH ACTIONS
+// ══════════════════════════════════════════
+async function refreshHeroAction(){
   const aEl=document.getElementById("hero-action");
   const gEl=document.getElementById("hero-gas");
-  if(!userAddress){
-    aEl.innerHTML=`<div class="connect-nudge" onclick="connectWallet()"><div class="cn-icon">🔮</div><div class="cn-title">Connect Wallet to Predict</div><div class="cn-sub">Gas in USDC · Arc Testnet</div></div>`;
-    gEl.style.display="none"; return;
-  }
-  if(!contract){
-    // Contract not deployed yet — show buttons but they'll prompt to deploy when clicked
-    aEl.innerHTML=`<div class="vote-row"><button class="btn-yes" onclick="vote(true)">✅ YES</button><button class="btn-no" onclick="vote(false)">❌ NO</button></div>`;
-    gEl.style.display="flex"; return;
-  }
-  try {
+  if(!userAddress){ aEl.innerHTML=nudgeHTML(); gEl.style.display="none"; return; }
+  if(!contract){ aEl.innerHTML=voteRowHTML(); gEl.style.display="flex"; return; }
+  try{
     const [voted,myAns]=await contract.hasUserVoted(userAddress,BigInt(todayDay));
-    const canClaim     =await contract.canClaimResult(userAddress,BigInt(todayDay));
+    const canClaim    =await contract.canClaimResult(userAddress,BigInt(todayDay));
     if(voted){
       aEl.innerHTML=`
         <div class="voted-box ${myAns?"vb-yes":"vb-no"}">
@@ -1205,153 +973,154 @@ async function refreshHeroAction() {
         </div>
         ${canClaim?`<button class="btn-claim" onclick="claimResult()" style="margin-top:10px">🏆 CLAIM RESULT + XP</button>`:""}`;
       gEl.style.display="none";
-    } else {
-      aEl.innerHTML=`<div class="vote-row"><button class="btn-yes" onclick="vote(true)">✅ YES</button><button class="btn-no" onclick="vote(false)">❌ NO</button></div>`;
-      gEl.style.display="flex"; estimateGas();
+    }else{
+      aEl.innerHTML=voteRowHTML(); gEl.style.display="flex"; estimateGas();
     }
+    // Yesterday claim
     const yC=await contract.canClaimResult(userAddress,BigInt(todayDay-1));
-    document.getElementById("mkt-yest-claim").innerHTML=yC
+    document.getElementById("my-claim").innerHTML=yC
       ?`<button class="btn-claim" onclick="claimResult(${todayDay-1})" style="margin-top:8px">🏆 CLAIM YESTERDAY'S RESULT + XP</button>`:"";
-  } catch(e){
+  }catch(e){
     console.error("refreshHeroAction:",e);
-    aEl.innerHTML=`<div class="vote-row"><button class="btn-yes" onclick="vote(true)">✅ YES</button><button class="btn-no" onclick="vote(false)">❌ NO</button></div>`;
-    gEl.style.display="flex";
+    aEl.innerHTML=voteRowHTML(); gEl.style.display="flex";
   }
 }
 
-// ── MARKETS ACTION ────────────────────────────────────────
-async function refreshMktAction() {
-  const aEl=document.getElementById("mkt-today-action");
-  const gEl=document.getElementById("mkt-today-gas");
-  if(!userAddress){
-    aEl.innerHTML=`<div class="connect-nudge" onclick="connectWallet()" style="padding:12px"><div class="cn-title" style="font-size:12px">🔮 Connect wallet to vote</div></div>`;
-    gEl.style.display="none"; return;
-  }
-  if(!contract){
-    aEl.innerHTML=`<div class="mc-vote-row"><button class="mc-btn-y" onclick="vote(true)">✅ YES</button><button class="mc-btn-n" onclick="vote(false)">❌ NO</button></div>`;
-    gEl.style.display="flex"; return;
-  }
-  try {
+async function refreshMktAction(){
+  const aEl=document.getElementById("mt-action");
+  const gEl=document.getElementById("mt-gas");
+  if(!userAddress){ aEl.innerHTML=`<div class="nudge" onclick="connectWallet()" style="padding:12px;margin-top:12px"><div class="nudge-title" style="font-size:12px">🔮 Connect wallet to vote</div></div>`; gEl.style.display="none"; return; }
+  if(!contract){ aEl.innerHTML=mktVoteHTML(); gEl.style.display="flex"; return; }
+  try{
     const [voted,myAns]=await contract.hasUserVoted(userAddress,BigInt(todayDay));
     if(voted){
-      aEl.innerHTML=`<div class="mc-voted ${myAns?"mcv-yes":"mcv-no"}"><div><div class="mcv-lbl">Your Vote</div><div class="mcv-ans" style="color:${myAns?"var(--greenL)":"var(--redL)"}">${myAns?"YES ✅":"NO ❌"}</div></div></div>`;
+      aEl.innerHTML=`<div class="mc-voted ${myAns?"mcvy":"mcvn"}"><div><div class="mcv-lbl">Your Vote</div><div class="mcv-ans" style="color:${myAns?"var(--greenL)":"var(--redL)"}">${myAns?"YES ✅":"NO ❌"}</div></div></div>`;
       gEl.style.display="none";
-    } else {
-      aEl.innerHTML=`<div class="mc-vote-row"><button class="mc-btn-y" onclick="vote(true)">✅ YES</button><button class="mc-btn-n" onclick="vote(false)">❌ NO</button></div>`;
-      gEl.style.display="flex"; estimateGas();
-    }
-  } catch(e){
-    aEl.innerHTML=`<div class="mc-vote-row"><button class="mc-btn-y" onclick="vote(true)">✅ YES</button><button class="mc-btn-n" onclick="vote(false)">❌ NO</button></div>`;
-    gEl.style.display="flex";
-  }
+    }else{ aEl.innerHTML=mktVoteHTML(); gEl.style.display="flex"; estimateGas(); }
+  }catch(e){ aEl.innerHTML=mktVoteHTML(); gEl.style.display="flex"; }
 }
 
-// ── VOTE ──────────────────────────────────────────────────
-async function vote(answer) {
+function voteRowHTML(){ return`<div class="vote-row"><button class="btn-yes" onclick="vote(true)">✅ YES</button><button class="btn-no" onclick="vote(false)">❌ NO</button></div>`; }
+function mktVoteHTML(){ return`<div class="mc-vote-row"><button class="mc-by" onclick="vote(true)">✅ YES</button><button class="mc-bn" onclick="vote(false)">❌ NO</button></div>`; }
+
+// ══════════════════════════════════════════
+//  VOTE
+// ══════════════════════════════════════════
+async function vote(answer){
   if(!userAddress){ toast("Connect Wallet","Please connect your wallet first","error"); return; }
-  if(!contract){
-    toast("Contract Not Deployed","Deploy PredictionArena.sol and set CFG.CONTRACT","info");
-    return;
-  }
-  document.querySelectorAll(".btn-yes,.btn-no,.mc-btn-y,.mc-btn-n").forEach(b=>b.disabled=true);
-  try {
+  if(!contract){ toast("Contract Not Deployed","Deploy PredictionArena.sol and set CFG.CONTRACT","info"); return; }
+
+  document.querySelectorAll(".btn-yes,.btn-no,.mc-by,.mc-bn").forEach(b=>b.disabled=true);
+  try{
     toast("Signing TX","Confirm in MetaMask…","info");
-    const fd=await provider.getFeeData();
-    const eg=await contract.predict.estimateGas(BigInt(todayDay),answer);
-    const gl=eg*130n/100n;
-    const costWei=gl*(fd.gasPrice||1000000000n);
-    const costUSDC=Number(ethers.formatEther(costWei));
-    const s=`~${costUSDC.toFixed(6)} USDC`;
-    ["hero-gas-val","mkt-today-gas-val"].forEach(id=>{const e=document.getElementById(id);if(e)e.textContent=s;});
+    const fd   = await provider.getFeeData();
+    const eg   = await contract.predict.estimateGas(BigInt(todayDay),answer);
+    const gl   = eg*130n/100n;
+    const cw   = gl*(fd.gasPrice||1000000000n);
+    const cu   = Number(ethers.formatEther(cw));
+    const s    = `~${cu.toFixed(6)} USDC`;
+    ["hero-gas-val","mt-gas-val"].forEach(id=>{const e=document.getElementById(id);if(e)e.textContent=s;});
 
-    const tx=await contract.predict(BigInt(todayDay),answer,{gasLimit:gl});
-    setHeroTx("pending",null,"Pending on Arc Testnet…");
-    setMktTx("pending",null,"Pending…");
+    const tx   = await contract.predict(BigInt(todayDay),answer,{gasLimit:gl});
+    setTxBox("hero","pending",null,"Pending on Arc Testnet…");
+    setTxBox("mt","pending",null,"Pending…");
 
-    const rc=await tx.wait();
-    const real=Number(ethers.formatEther(rc.gasUsed*(fd.gasPrice||1000000000n)));
-    totalGasUSDC+=real;
-    setHeroTx("success",rc.hash,`Confirmed! Gas: ${real.toFixed(6)} USDC`);
-    setMktTx("success",rc.hash,"Confirmed on Arc ⚡");
+    const rc   = await tx.wait();
+    const real = Number(ethers.formatEther(rc.gasUsed*(fd.gasPrice||1000000000n)));
+    totalGas  += real;
+    setTxBox("hero","success",rc.hash,`Confirmed! Gas: ${real.toFixed(6)} USDC`);
+    setTxBox("mt","success",rc.hash,"Confirmed on Arc ⚡");
     toast("Prediction Locked! 🎉",`${answer?"YES ✅":"NO ❌"} on-chain. +10 XP!`,"success");
     await saveFirebase(rc,answer,real);
     await Promise.all([loadMyStats(),refreshHeroAction(),refreshMktAction()]);
-  } catch(e){
+  }catch(e){
     console.error("vote:",e);
-    document.querySelectorAll(".btn-yes,.btn-no,.mc-btn-y,.mc-btn-n").forEach(b=>b.disabled=false);
+    document.querySelectorAll(".btn-yes,.btn-no,.mc-by,.mc-bn").forEach(b=>b.disabled=false);
     const msg=e.reason||e.message||"Failed";
-    setHeroTx("error",null,msg.substring(0,80));
+    setTxBox("hero","error",null,msg.substring(0,80));
     toast("TX Failed",msg.substring(0,60),"error");
   }
 }
 
-// ── CLAIM ─────────────────────────────────────────────────
-async function claimResult(dayOverride) {
+// ══════════════════════════════════════════
+//  CLAIM
+// ══════════════════════════════════════════
+async function claimResult(dayOverride){
   if(!contract||!userAddress) return;
   const tDay=dayOverride!==undefined?BigInt(dayOverride):BigInt(todayDay);
-  try {
+  try{
     toast("Claiming XP","TX on Arc…","info");
     const fd=await provider.getFeeData();
     const e=await contract.claimResult.estimateGas(tDay);
     const tx=await contract.claimResult(tDay,{gasLimit:e*130n/100n});
     const rc=await tx.wait();
     const cost=Number(ethers.formatEther(rc.gasUsed*(fd.gasPrice||1000000000n)));
-    totalGasUSDC+=cost;
-    setHeroTx("success",rc.hash,"Result claimed! XP on-chain ✅");
+    totalGas+=cost;
+    setTxBox("hero","success",rc.hash,"Result claimed! XP on-chain ✅");
     toast("XP Claimed! 🏆","Check your stats","success");
     if(db) await db.collection("users").doc(userAddress.toLowerCase()).set({lastClaimed:Number(tDay),claimTx:rc.hash},{merge:true});
-    document.getElementById("mkt-yest-claim").innerHTML="";
+    document.getElementById("my-claim").innerHTML="";
     await Promise.all([loadMyStats(),refreshHeroAction(),refreshMktAction()]);
     if(currentPage==="profile") renderProfile();
-  } catch(e){toast("Claim Failed",(e.reason||e.message||"Error").substring(0,60),"error");}
+  }catch(e){ toast("Claim Failed",(e.reason||e.message||"Error").substring(0,60),"error"); }
 }
 
-// ── TX DISPLAY ────────────────────────────────────────────
-function setHeroTx(type,hash,msg){
-  const el=document.getElementById("hero-tx");
-  el.style.display="block"; el.className="tx-strip "+type;
-  document.getElementById("hero-tx-msg").textContent=msg;
-  const lnk=document.getElementById("hero-tx-link");
-  if(hash){lnk.textContent=hash.slice(0,14)+"…"+hash.slice(-6);lnk.href=`${CFG.EXPLORER}/tx/${hash}`;lnk.style.display="block";}
-  else lnk.style.display="none";
-}
-function setMktTx(type,hash,msg){
-  const el=document.getElementById("mkt-today-tx");
-  el.style.display="block"; el.className="mc-tx "+type;
-  document.getElementById("mkt-today-tx-msg").textContent=msg;
-  const lnk=document.getElementById("mkt-today-tx-link");
-  if(hash){lnk.textContent=hash.slice(0,12)+"…";lnk.href=`${CFG.EXPLORER}/tx/${hash}`;lnk.style.display="block";}
-  else lnk.style.display="none";
+// ══════════════════════════════════════════
+//  TX BOX
+// ══════════════════════════════════════════
+function setTxBox(pfx,type,hash,msg){
+  const el=document.getElementById(pfx===("hero")?"hero-tx":"mt-tx");
+  if(!el) return;
+  el.style.display="block"; el.className="tx-box "+type;
+  const ml=document.getElementById(pfx==="hero"?"hero-tx-msg":"mt-tx-msg");
+  if(ml) ml.textContent=msg;
+  const lk=document.getElementById(pfx==="hero"?"hero-tx-link":"mt-tx-link");
+  if(lk){
+    if(hash){lk.textContent=hash.slice(0,14)+"…"+hash.slice(-6);lk.href=`${CFG.EXPLORER}/tx/${hash}`;lk.style.display="block";}
+    else lk.style.display="none";
+  }
 }
 
-// ── FIREBASE ──────────────────────────────────────────────
+// ══════════════════════════════════════════
+//  FIREBASE — SAVE with question text!
+// ══════════════════════════════════════════
 async function saveFirebase(receipt,answer,gasCost){
   if(!db) return;
-  try {
+  try{
     const addr=userAddress.toLowerCase();
+    const qInfo=getTodayQuestion(todayDay);
     await db.collection("users").doc(addr).collection("predictions").doc(String(todayDay)).set({
-      address:addr,day:todayDay,answer,txHash:receipt.hash,gasCostUSDC:gasCost,
-      timestamp:firebase.firestore.FieldValue.serverTimestamp(),result:null,correct:null,
+      address:addr,
+      day:todayDay,
+      question:qInfo.text,        // ← save question text!
+      category:qInfo.cat,
+      answer,
+      txHash:receipt.hash,
+      gasCostUSDC:gasCost,
+      timestamp:firebase.firestore.FieldValue.serverTimestamp(),
+      result:null,correct:null,
     });
-    loadLeaderboard(); await loadHistory();
-  } catch(e){console.warn("Firebase:",e.message);}
+    loadLeaderboard();
+    await loadHistory();
+  }catch(e){ console.warn("Firebase save:",e.message); }
 }
 
-// ── MY STATS ──────────────────────────────────────────────
+// ══════════════════════════════════════════
+//  MY STATS
+// ══════════════════════════════════════════
 async function loadMyStats(){
   if(!userAddress) return;
   if(!contract){
-    ["s-xp","s-streak","s-acc"].forEach(id=>{
-      const e=document.getElementById(id);if(e)e.textContent=id==="s-acc"?"0%":"0";
-    });
+    ["s-xp","s-str"].forEach(id=>document.getElementById(id).textContent="0");
+    document.getElementById("s-acc").textContent="0%";
     document.getElementById("hdr-xp-val").textContent="0";
     return;
   }
-  try {
+  try{
     const res=await contract.getUserStats(userAddress);
     const [t,cr,s,l,x,a]=[Number(res[0]),Number(res[1]),Number(res[2]),Number(res[3]),Number(res[4]),Number(res[5])];
     document.getElementById("s-xp").textContent     = x.toLocaleString();
-    document.getElementById("s-streak").textContent = s;
+    document.getElementById("s-str").textContent    = s;
     document.getElementById("s-acc").textContent    = a+"%";
     document.getElementById("hdr-xp-val").textContent = x.toLocaleString();
     if(db) await db.collection("leaderboard").doc(userAddress.toLowerCase()).set({
@@ -1360,138 +1129,147 @@ async function loadMyStats(){
       updatedAt:firebase.firestore.FieldValue.serverTimestamp(),
     });
     if(currentPage==="profile") renderProfile();
-  } catch(e){console.error("loadMyStats:",e);}
+  }catch(e){ console.error("loadMyStats:",e); }
 }
 
-// ── LEADERBOARD ───────────────────────────────────────────
+// ══════════════════════════════════════════
+//  LEADERBOARD — NO rank shown under names
+// ══════════════════════════════════════════
 function loadLeaderboard(){
   if(!db) return;
   const c=document.getElementById("lb-list");
-  try {
+  try{
     if(lbUnsub) lbUnsub();
     lbUnsub=db.collection("leaderboard").orderBy("xp","desc").limit(8)
       .onSnapshot(snap=>renderLB(c,snap.docs.map(d=>d.data())));
-  } catch(e){c.innerHTML=`<div class="empty-msg">Leaderboard loading…</div>`;}
+  }catch(e){ c.innerHTML=`<div class="empty-m">Leaderboard loading…</div>`; }
 }
+
 function renderLB(c,rows){
   const me=(userAddress||"").toLowerCase();
-  if(!rows.length){c.innerHTML=`<div class="empty-msg"><span class="empty-ico">🏆</span>Be the first prophet!</div>`;return;}
-  const mc=i=>i===0?"pos-1":i===1?"pos-2":i===2?"pos-3":"pos-n";
+  if(!rows.length){ c.innerHTML=`<div class="empty-m"><span class="empty-ico">🏆</span>Be the first prophet!</div>`; return; }
+  const mc=i=>i===0?"p1":i===1?"p2":i===2?"p3":"pn";
   const md=i=>i===0?"🥇":i===1?"🥈":i===2?"🥉":"#"+(i+1);
   let myPos="—";
-  const html=rows.map((r,i)=>{
+  c.innerHTML=rows.map((r,i)=>{
     const addr=r.address||""; const isMe=addr.toLowerCase()===me;
     if(isMe) myPos="#"+(i+1);
-    const rk=rankOf(r.xp||0);
+    // NO rank sub-line — just name and XP
     return `<div class="lb-row${isMe?" me":""}">
-      <div class="lb-pos-badge ${mc(i)}">${md(i)}</div>
+      <div class="lb-pos ${mc(i)}">${md(i)}</div>
       <div class="lb-info">
         <div class="lb-name" style="${isMe?"color:var(--purpleL)":""}">${isMe?"You ✦":shorten(addr)}</div>
-        <div class="lb-meta" style="color:${rk.c}">${rk.i} ${rk.n}</div>
       </div>
       <div class="lb-right">
-        <div class="lb-xp-val">${(r.xp||0).toLocaleString()}</div>
+        <div class="lb-xp">${(r.xp||0).toLocaleString()}</div>
         <div class="lb-xp-lbl">XP</div>
       </div>
     </div>`;
   }).join("");
-  c.innerHTML=html;
-  const mp=document.getElementById("my-lb-pos");
-  if(mp) mp.textContent=userAddress?myPos:"Connect Wallet";
+  const mp=document.getElementById("my-pos");
+  if(mp) mp.textContent=userAddress?myPos:"—";
 }
 
-// ── PROFILE ───────────────────────────────────────────────
+// ══════════════════════════════════════════
+//  PROFILE — NO rank badge, NO disconnect btn, NO arc text
+// ══════════════════════════════════════════
 async function renderProfile(){
   const c=document.getElementById("profile-content");
-  if(!userAddress){
-    c.innerHTML=`<div class="empty-msg"><span class="empty-ico">🔮</span>Connect wallet to see profile</div>`;
-    return;
-  }
+  if(!userAddress){ c.innerHTML=`<div class="empty-m"><span class="empty-ico">🔮</span>Connect wallet to see profile</div>`; return; }
   let t=0,cr=0,s=0,l=0,x=0,a=0;
   if(contract){
     try{
       const res=await contract.getUserStats(userAddress);
       [t,cr,s,l,x,a]=[Number(res[0]),Number(res[1]),Number(res[2]),Number(res[3]),Number(res[4]),Number(res[5])];
-    }catch(e){console.error(e);}
+    }catch(e){ console.error(e); }
   }
 
-  // No rank pill, no rank progress card — just avatar + address + stats
   c.innerHTML=`
-    <div class="profile-hero">
-      <div class="profile-avatar">🔮</div>
-      <div class="profile-addr">${shorten(userAddress)}</div>
+    <div class="prof-hero">
+      <div class="prof-avatar">🔮</div>
+      <div class="prof-addr">${shorten(userAddress)}</div>
     </div>
 
-    <div class="profile-stats">
-      <div class="ps-card"><div class="psc-val" style="color:var(--purpleL)">${x.toLocaleString()}</div><div class="psc-lbl">XP Points</div></div>
-      <div class="ps-card"><div class="psc-val" style="color:var(--amberL)">${s}🔥</div><div class="psc-lbl">Streak</div></div>
-      <div class="ps-card"><div class="psc-val" style="color:var(--greenL)">${cr}</div><div class="psc-lbl">Correct</div></div>
-      <div class="ps-card"><div class="psc-val" style="color:var(--cyanL)">${a}%</div><div class="psc-lbl">Accuracy</div></div>
+    <div class="prof-stats">
+      <div class="ps-c"><div class="ps-val" style="color:var(--purpleL)">${x.toLocaleString()}</div><div class="ps-lbl">XP Points</div></div>
+      <div class="ps-c"><div class="ps-val" style="color:var(--amberL)">${s}🔥</div><div class="ps-lbl">Streak</div></div>
+      <div class="ps-c"><div class="ps-val" style="color:var(--greenL)">${cr}</div><div class="ps-lbl">Correct</div></div>
+      <div class="ps-c"><div class="ps-val" style="color:var(--cyanL)">${a}%</div><div class="ps-lbl">Accuracy</div></div>
     </div>
 
-    <div class="section-hdr">My Prediction History</div>
+    <div class="sh">My Prediction History</div>
     <div class="hist-wrap">
       <div class="hist-hdr">On-Chain Predictions</div>
-      <div id="history-list"><div class="empty-msg"><span class="spinner"></span></div></div>
+      <div id="history-list"><div class="empty-m"><span class="spin"></span></div></div>
     </div>
 
-    <div class="section-hdr">Arc Network Info</div>
+    <div class="sh">Arc Network Info</div>
     <div class="arc-info">
-      <div class="ai-card"><span class="ai-ico">💵</span><div class="ai-title">Gas in USDC</div><div class="ai-desc">No ETH needed. Every TX paid in USDC.</div><div class="ai-val">Stablecoin gas</div></div>
-      <div class="ai-card"><span class="ai-ico">⚡</span><div class="ai-title">Instant Finality</div><div class="ai-desc">Deterministic. No re-orgs. Instant.</div><div class="ai-val">Zero waiting</div></div>
-      <div class="ai-card"><span class="ai-ico">🌐</span><div class="ai-title">Multi-Currency</div><div class="ai-desc">Native USDC and EURC support.</div><div class="ai-val">USDC · EURC</div></div>
-      <div class="ai-card"><span class="ai-ico">🔍</span><div class="ai-title">Transparent</div><div class="ai-desc">Verify every vote on ArcScan.</div><div class="ai-val"><a href="https://testnet.arcscan.app" target="_blank" style="color:var(--cyanL)">ArcScan ↗</a></div></div>
-    </div>
-
-    <button class="btn-disconnect" onclick="disconnectWallet()">🔌 Disconnect Wallet</button>
-
-    <div style="text-align:center;font-size:10px;color:var(--text3);padding-bottom:8px">
-      Arc Testnet · Chain 5042002 · rpc.testnet.arc.network
+      <div class="ai-c"><span class="ai-ico">💵</span><div class="ai-t">Gas in USDC</div><div class="ai-d">No ETH needed. Every TX paid in USDC.</div><div class="ai-v">Stablecoin gas</div></div>
+      <div class="ai-c"><span class="ai-ico">⚡</span><div class="ai-t">Instant Finality</div><div class="ai-d">Deterministic. No re-orgs. Instant.</div><div class="ai-v">Zero waiting</div></div>
+      <div class="ai-c"><span class="ai-ico">🌐</span><div class="ai-t">Multi-Currency</div><div class="ai-d">Native USDC and EURC support.</div><div class="ai-v">USDC · EURC</div></div>
+      <div class="ai-c"><span class="ai-ico">🔍</span><div class="ai-t">Transparent</div><div class="ai-d">Verify every vote on ArcScan.</div><div class="ai-v"><a href="https://testnet.arcscan.app" target="_blank" style="color:var(--cyanL)">ArcScan ↗</a></div></div>
     </div>`;
+  // NO disconnect button, NO arc footer text — disconnect is in header dropdown
 
   await loadHistory();
 }
 
+// ══════════════════════════════════════════
+//  HISTORY — now shows question text!
+// ══════════════════════════════════════════
 async function loadHistory(){
   const c=document.getElementById("history-list");
   if(!c) return;
-  if(!db||!userAddress){c.innerHTML=`<div class="empty-msg">Connect wallet</div>`;return;}
-  try {
-    const snap=await db.collection("users").doc(userAddress.toLowerCase()).collection("predictions").orderBy("day","desc").limit(10).get();
-    if(snap.empty){c.innerHTML=`<div class="empty-msg">No predictions yet</div>`;return;}
+  if(!db||!userAddress){ c.innerHTML=`<div class="empty-m">Connect wallet</div>`; return; }
+  try{
+    const snap=await db.collection("users")
+      .doc(userAddress.toLowerCase())
+      .collection("predictions")
+      .orderBy("day","desc")
+      .limit(10)
+      .get();
+    if(snap.empty){ c.innerHTML=`<div class="empty-m">No predictions yet — make your first above!</div>`; return; }
     c.innerHTML=snap.docs.map(d=>{
       const p=d.data();
+      // Use saved question text OR fall back to auto-question for that day
+      const qText=p.question||getTodayQuestion(p.day||0).text;
       const ans=p.answer?`<span class="hr-ans ha-yes">YES</span>`:`<span class="hr-ans ha-no">NO</span>`;
-      const res=p.correct===true?`<span class="hr-result hr-ok">✓ +25XP</span>`
-               :p.correct===false?`<span class="hr-result hr-ng">✗ Wrong</span>`
-               :`<span class="hr-result hr-p">⏳</span>`;
+      const res=p.correct===true?`<span class="hr-res hrok">✓ +25XP</span>`
+               :p.correct===false?`<span class="hr-res hrng">✗ Wrong</span>`
+               :`<span class="hr-res hrp">⏳</span>`;
       const lnk=p.txHash?`<a class="hr-link" href="${CFG.EXPLORER}/tx/${p.txHash}" target="_blank">${p.txHash.slice(0,8)}… ↗</a>`:"";
-      return `<div class="hist-row"><span class="hr-day">D${p.day}</span>${ans}${res}${lnk}</div>`;
+      return `<div class="hist-row">
+        <span class="hr-day">D${p.day}</span>
+        <span class="hr-q" title="${qText}">${qText}</span>
+        ${ans}${res}${lnk}
+      </div>`;
     }).join("");
-  } catch(e){c.innerHTML=`<div class="empty-msg">Could not load</div>`;}
+  }catch(e){ c.innerHTML=`<div class="empty-m">Could not load history</div>`; }
 }
 
-// ── ADMIN ─────────────────────────────────────────────────
+// ══════════════════════════════════════════
+//  ADMIN
+// ══════════════════════════════════════════
 async function adminSetQuestion(){
-  if(!contract){toast("No Contract","Deploy and set CFG.CONTRACT","info");return;}
+  if(!contract){ toast("No Contract","Set CFG.CONTRACT first","info"); return; }
   const text=document.getElementById("a-q-text").value.trim();
   const cat=parseInt(document.getElementById("a-q-cat").value);
-  if(!text){toast("Empty","Enter question text","error");return;}
-  try {
+  if(!text){ toast("Empty","Enter question text","error"); return; }
+  try{
     const e=await contract.setQuestion.estimateGas(BigInt(todayDay),text,cat);
     const tx=await contract.setQuestion(BigInt(todayDay),text,cat,{gasLimit:e*130n/100n});
     toast("Setting Question","TX on Arc…","info");
     const rc=await tx.wait();
     if(db) await db.collection("questions").doc(String(todayDay)).set({text,category:cat,day:todayDay,resolved:false,txHash:rc.hash,timestamp:firebase.firestore.FieldValue.serverTimestamp()});
-    document.getElementById("a-q-text").value="";
-    toast("Question Live! ✅","Market is now open","success");
+    toast("Question Live! ✅","Voting is now open","success");
     loadPublicData();
-  } catch(e){toast("Failed",(e.reason||e.message||"Error").substring(0,60),"error");}
+  }catch(e){ toast("Failed",(e.reason||e.message||"Error").substring(0,60),"error"); }
 }
 async function adminResolve(){
-  if(!contract){toast("No Contract","Deploy and set CFG.CONTRACT","info");return;}
+  if(!contract){ toast("No Contract","Set CFG.CONTRACT first","info"); return; }
   const answer=document.getElementById("a-resolve-ans").value==="true";
-  try {
+  try{
     const e=await contract.resolveQuestion.estimateGas(BigInt(todayDay),answer);
     const tx=await contract.resolveQuestion(BigInt(todayDay),answer,{gasLimit:e*130n/100n});
     toast("Resolving","TX on Arc…","info");
@@ -1499,21 +1277,23 @@ async function adminResolve(){
     if(db) await db.collection("questions").doc(String(todayDay)).set({resolved:true,answer},{merge:true});
     toast("Resolved! ✅",`Answer: ${answer?"YES":"NO"}. Users can claim XP.`,"success");
     loadPublicData();
-  } catch(e){toast("Failed",(e.reason||e.message||"Error").substring(0,60),"error");}
+  }catch(e){ toast("Failed",(e.reason||e.message||"Error").substring(0,60),"error"); }
 }
-function fillQ(t,c){document.getElementById("a-q-text").value=t;document.getElementById("a-q-cat").value=c;}
+function fillQ(t,c){ document.getElementById("a-q-text").value=t; document.getElementById("a-q-cat").value=c; }
 
-// ── TOAST ─────────────────────────────────────────────────
+// ══════════════════════════════════════════
+//  TOAST
+// ══════════════════════════════════════════
 function toast(title,sub,type="info"){
   const icons={success:"✅",error:"❌",info:"ℹ️"};
   const ct=document.getElementById("toast-ct");
   const el=document.createElement("div");
-  el.className=`toast t-${type}`;
+  el.className=`toast t${type[0]}`;
   el.innerHTML=`<div class="t-ico">${icons[type]}</div><div><div class="t-title">${title}</div>${sub?`<div class="t-sub">${sub}</div>`:""}</div>`;
   ct.appendChild(el);
   setTimeout(()=>{el.style.opacity="0";el.style.transform="translateY(8px)";el.style.transition=".3s";setTimeout(()=>el.remove(),300);},4200);
 }
-function shorten(a){return a?a.slice(0,6)+"…"+a.slice(-4):"—";}
+function shorten(a){ return a?a.slice(0,6)+"…"+a.slice(-4):"—"; }
 
 document.addEventListener("DOMContentLoaded", init);
 </script>
